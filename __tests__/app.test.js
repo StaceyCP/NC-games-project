@@ -31,8 +31,12 @@ describe('app', () => {
                 })
             });
         });
+    });
+    describe('app error handling', () => {
         test('Responds with an error 404 incorrect endpoints', () => {
-            return request(app).get('/api/cats').expect(404)
-        })
+            return request(app).get('/api/cats').expect(404).then((response) => {
+                expect(response.text).toBe('Not Found :(');
+            })
+        });
     });
 });
