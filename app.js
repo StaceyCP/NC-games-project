@@ -1,12 +1,15 @@
 const express = require('express')
 const app = express()
 const {
-    getCategories
+    getCategories,
+    getReviews
 } = require('./controllers/app_controller')
 
 app.use(express.json())
 
 app.get('/api/categories', getCategories)
+
+app.get('/api/reviews', getReviews)
 
 app.all('/*', (req, res) => {
     res.status(404).send('Not Found :(')
