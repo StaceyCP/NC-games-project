@@ -98,13 +98,6 @@ describe('app', () => {
             });
         });
     });
-    describe('app error handling', () => {
-        test('Responds with an error 404 incorrect endpoints', () => {
-            return request(app).get('/api/cats').expect(404).then((response) => {
-                expect(response.text).toBe('Not Found :(');
-            });
-        });
-    });
     describe('GET /api/reviews/:review_id/comments', () => {
         test('Responds with an array', () => {
             return request(app).get('/api/reviews/3/comments').expect(200).then(response => {
@@ -147,6 +140,71 @@ describe('app', () => {
                 const comments = response.body.comments
                 expect(comments).toBeSorted({ key: 'created_at', descending: true})
             })
-        })
+        });
+    });
+    describe('POST request to /api/reviews/:review_id/comments', () => {
+        test('Responds status 201 and returns the newly created comment', () => {
+            return request(app).post('/api/reviews/1/comments')
+            .send({ username: 'bainesface', body: "This is a review"})
+            .expect(201)
+            .then(response => {
+                const newComment = response.body.newComment
+                expect.objectContaining({
+                    review_id: expect.any(Number),
+                    comment_id: expect.any(Number),
+                    author: expect.any(String),
+                    body: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: expect.any(Number)
+                })
+            })
+        });
+        test('Responds status 400 - username does not exist', () => {
+            return request(app).post('/api/reviews/1/comments')
+            .send({ username: 'Stacey123', body: "This is a review too"})
+            .expect(400)
+            .then(response => {
+                expect(response.text).toBe('username does not exist!')
+            })
+        });
+        test('Responds status 400 bad request when passed a review_id that is not the correct data type', () => {
+            return request(app).post('/api/reviews/abc/comments')
+            .send({ username: 'mallionaire', body: "This is a review three"})
+            .expect(400)
+            .then(response => {
+                expect(response.text).toBe('Bad Request!')
+            })
+        });
+        test('Responds status 400 bad request when passed a request body that is empty', () => {
+            return request(app).post('/api/reviews/abc/comments')
+            .send({})
+            .expect(400)
+            .then(response => {
+                expect(response.text).toBe('Bad Request!')
+            })
+        });
+        test('Responds status 400 bad request when passed a request body that has the invalid fields', () => {
+            return request(app).post('/api/reviews/abc/comments')
+            .send({votes: 20})
+            .expect(400)
+            .then(response => {
+                expect(response.text).toBe('Bad Request!')
+            })
+        });
+        test('Responds status 404 not found when passed a review_id that is not currently in the data', () => {
+            return request(app).post('/api/reviews/9999/comments')
+            .send({ username: 'mallionaire', body: "This is a review four"})
+            .expect(404)
+            .then(response => {
+                expect(response.text).toBe('id Not Found!')
+            })
+        });
+    });
+    describe('app error handling', () => {
+        test('Responds with an error 404 incorrect endpoints', () => {
+            return request(app).get('/api/cats').expect(404).then((response) => {
+                expect(response.text).toBe('Not Found :(');
+            });
+        });
     });
 });
