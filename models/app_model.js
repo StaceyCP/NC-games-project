@@ -18,4 +18,15 @@ const fetchReviews = () => {
     })
 }
 
-module.exports = { fetchCategories, fetchReviews }
+const fetchReviewById = (review_id) => {
+    const reviewByIdQueryStr = `SELECT * FROM reviews WHERE review_id = $1`
+    return db.query(reviewByIdQueryStr, [review_id]).then((result) => {
+        if (result.rows.length === 0) {
+            return Promise.reject({status: 404, message: 'id Not Found!'});
+        } else {
+            return result.rows
+        }
+    })
+}
+
+module.exports = { fetchCategories, fetchReviews, fetchReviewById }

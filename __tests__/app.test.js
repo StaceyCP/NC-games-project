@@ -34,17 +34,14 @@ describe('app', () => {
         });
     });
     describe('GET /api/reviews', () => {
-        test('Responds with a status 200', () => {
-            return request(app).get('/api/reviews').expect(200)
-        });
         test('Responds with an array', () => {
             return request(app).get('/api/reviews').expect(200).then((response) => {
-                expect(Array.isArray(response.body)).toBe(true);
+                expect(Array.isArray(response.body.reviews)).toBe(true);
             })
         })
         test('Each array item has the correct properties including comment_count', () => {
             return request(app).get('/api/reviews').expect(200).then((response) => {
-                const reviews = response.body
+                const reviews = response.body.reviews
                 expect(reviews.length).toBe(13)
                 reviews.forEach((review) => {
                     expect(review).toHaveProperty('owner')
@@ -61,16 +58,43 @@ describe('app', () => {
         });
         test('Comment_count returns the correct value', () => {
             return request(app).get('/api/reviews').expect(200).then((response) => {
-                const reviews = response.body
+                const reviews = response.body.reviews
                 const comments3 = reviews.find(review => review.comment_count = 3)
-                console.log(reviews);
                 expect(comments3.comment_count).toBe(3)
             });
         });
         test('Response should have a default sort by created_at desc', () => {
             return request(app).get('/api/reviews').expect(200).then((response) => {
-                const reviews = response.body
+                const reviews = response.body.reviews
                 expect(reviews).toBeSorted({ key: 'created_at', descending: true})
+            });
+        });
+    });
+    describe('GET /api/review/:review_id', () => {
+        test('Responds with a single review object containing the correct properties', () => {
+            return request(app).get('/api/reviews/3').expect(200).then((response) => {
+                const review = response.body
+                expect.objectContaining({
+                    review_id: expect.any(Number),
+                    title: expect.any(String),
+                    category: expect.any(String),
+                    designer: expect.any(String),
+                    owner: expect.any(String),
+                    review_body: expect.any(String),
+                    review_url: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: expect.any(Number)
+                })
+            });
+        });
+        test('Responds with a 404 error not found when passed an ID that does not currently exist within the db', () => {
+            return request(app).get('/api/reviews/9999').expect(404).then((response) => {
+                expect(response.text).toBe('id Not Found!')
+            });
+        });
+        test('Responds with a 400 error bad request when passed an ID that is of an incorrect data type', () => {
+            return request(app).get('/api/reviews/abc').expect(400).then((response) => {
+                expect(response.text).toBe('Bad Request!')
             });
         });
     });
