@@ -1,6 +1,7 @@
 const { 
     fetchCategories,
-    fetchReviews
+    fetchReviews,
+    fetchReviewById
 } = require('../models/app_model')
 
 const getCategories = (req, res, next) => {
@@ -11,8 +12,20 @@ const getCategories = (req, res, next) => {
 
 const getReviews = (req, res, next) => {
     fetchReviews().then((reviews) => {
-        res.status(200).send(reviews)
+        res.status(200).send({reviews})
     })
 }
 
-module.exports = { getCategories, getReviews }
+const getReviewById = (req, res, next) => {
+    const { review_id } = req.params
+    fetchReviewById(review_id).then((review) => {
+        res.status(200).send(review[0])
+    }).catch(err => {
+        if (err.code === '22P02') {
+            res.status(400).send('Bad Request!')
+        }
+        next(err)
+    })
+}
+
+module.exports = { getCategories, getReviews, getReviewById }
