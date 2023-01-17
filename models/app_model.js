@@ -1,4 +1,3 @@
-const { getCommentsByReview_id } = require('../controllers/app_controller')
 const db = require('../db/connection')
 
 const fetchCategories = () => {
@@ -22,11 +21,18 @@ const fetchReviews = () => {
 const fetchCommentsByReview_id = (review_id) => {
     const getCommentsByReview_idStr = `SELECT * FROM comments WHERE review_id = $1`
     return db.query(getCommentsByReview_idStr, [review_id]).then(results => {
-        if (results.rows.length === 0) {
-            return Promise.reject({status: 400, message: "review_id not found!"})
+        if (!results.rows[0]) {
+            return Promise.reject({status: 404, message: "review_id not found!"})
         }
         return results.rows
     })
 }
 
-module.exports = { fetchCategories, fetchReviews, fetchCommentsByReview_id }
+const fetchComments = (review_id) => {
+    const getCommentsByReview_idStr = `SELECT * FROM comments WHERE review_id = $1`
+    return db.query(getCommentsByReview_idStr, [review_id]).then(results => {
+        return results.rows
+    })
+}
+
+module.exports = { fetchCategories, fetchReviews, fetchCommentsByReview_id, fetchComments }
