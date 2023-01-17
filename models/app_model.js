@@ -29,4 +29,11 @@ const fetchReviewById = (review_id) => {
     })
 }
 
-module.exports = { fetchCategories, fetchReviews, fetchReviewById }
+const fetchCommentsByReview_id = (review_id) => {
+    const getCommentsByReview_idStr = `SELECT * FROM comments WHERE review_id = $1 ORDER BY created_at DESC`
+    return db.query(getCommentsByReview_idStr, [review_id]).then(results => {
+        return results.rows
+    })
+}
+
+module.exports = { fetchCategories, fetchReviews, fetchReviewById, fetchCommentsByReview_id}
