@@ -21,9 +21,6 @@ const getReviewById = (req, res, next) => {
     fetchReviewById(review_id).then((review) => {
         res.status(200).send(review[0])
     }).catch(err => {
-        if (err.code === '22P02') {
-            res.status(400).send('Bad Request!')
-        }
         next(err)
     })
 }
