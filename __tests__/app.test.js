@@ -3,6 +3,7 @@ const seed = require('../db/seeds/seed')
 const db = require('../db/connection')
 const data = require('../db/data/test-data')
 const request = require('supertest')
+const { response } = require('express')
 require('jest-sorted')
 
 beforeEach(() => {
@@ -74,17 +75,19 @@ describe('app', () => {
         test('Responds with a single review object containing the correct properties', () => {
             return request(app).get('/api/reviews/3').expect(200).then((response) => {
                 const review = response.body
-                expect.objectContaining({
-                    review_id: expect.any(Number),
-                    title: expect.any(String),
-                    category: expect.any(String),
-                    designer: expect.any(String),
-                    owner: expect.any(String),
-                    review_body: expect.any(String),
-                    review_url: expect.any(String),
-                    created_at: expect.any(String),
-                    votes: expect.any(Number)
-                })
+                const expectedReview = {
+                        review_id: 3,
+                        title: 'Ultimate Werewolf',
+                        designer: 'Akihisa Okui',
+                        owner: 'bainesface',
+                        review_img_url:
+                          'https://images.pexels.com/photos/5350049/pexels-photo-5350049.jpeg?w=700&h=700',
+                        review_body: "We couldn't find the werewolf!",
+                        category: 'social deduction',
+                        created_at: expect.any(String),
+                        votes: 5
+                }
+                expect(review).toMatchObject(expectedReview)
             });
         });
         test('Responds with a 404 error not found when passed an ID that does not currently exist within the db', () => {
@@ -149,14 +152,15 @@ describe('app', () => {
             .expect(201)
             .then(response => {
                 const newComment = response.body.newComment
-                expect.objectContaining({
-                    review_id: expect(1),
+                const expectedComment = {
+                    review_id: 1,
                     comment_id: expect.any(Number),
-                    author: expect('bainesface'),
-                    body: expect("This is a review"),
+                    author: 'bainesface',
+                    body: "This is a review",
                     created_at: expect.any(String),
-                    votes: expect(0)
-                })
+                    votes: 0
+                }
+                expect(newComment).toMatchObject(expectedComment)
             })
         });
         test('Database - comments table is updated with the new comment', () => {
@@ -211,6 +215,50 @@ describe('app', () => {
             })
         });
     });
+    describe('PATCH /api/reviews/:review_id', () => {
+        test('Responds 200 OK and sends back the updated review for positive numbers in the inc_votes', () => {
+            return request(app).patch('/api/reviews/3')
+            .send({ inc_votes: 100})
+            .expect(200)
+            .then((response) => {
+                const updatedReview = response.body.updatedReview
+                const expectedReview = {
+                    review_id: 3,
+                    title: expect.any(String),
+                    category: expect.any(String),
+                    designer: expect.any(String),
+                    owner: expect.any(String),
+                    review_body: expect.any(String),
+                    review_img_url: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: 105
+                    }
+                expect(updatedReview).toMatchObject(expectedReview)
+                });
+            });
+            test('Responds 200 OK and sends back the updated review for negative numbers in the inc_votes', () => {
+                return request(app).patch('/api/reviews/1')
+                .send({ inc_votes: -100})
+                .expect(200)
+                .then((response) => {
+                    const updatedReview = response.body.updatedReview
+                    console.log(updatedReview);
+                    const expectedReview = {
+                        review_id: 1,
+                        title: expect.any(String),
+                        category: expect.any(String),
+                        designer: expect.any(String),
+                        owner: expect.any(String),
+                        review_body: expect.any(String),
+                        review_img_url: expect.any(String),
+                        created_at: expect.any(String),
+                        votes: -99
+                    }
+                    expect(updatedReview).toMatchObject(expectedReview);
+                });
+            });
+        });
+    });
     describe('app error handling', () => {
         test('Responds with an error 404 incorrect endpoints', () => {
             return request(app).get('/api/cats').expect(404).then((response) => {
@@ -218,4 +266,3 @@ describe('app', () => {
             });
         });
     });
-});
