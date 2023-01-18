@@ -46,7 +46,11 @@ exports.addCommentByReview_id = (review_id, username, body) => {
 exports.updateReviewById = (review_id, inc_votes) => {
     const updateVotesQueryStr = `UPDATE reviews SET votes = ( votes + $1 ) WHERE review_id = $2 RETURNING *`
     return db.query(updateVotesQueryStr, [inc_votes, review_id]).then(results => {
-        return results.rows[0]
+        if (results.rows.length === 0) {
+            return Promise.reject({status: 404, message: 'id Not Found!'});
+        } else { 
+            return results.rows[0]
+        }
     })
 }
 
