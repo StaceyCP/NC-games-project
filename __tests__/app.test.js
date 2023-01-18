@@ -242,7 +242,6 @@ describe('app', () => {
                 .expect(200)
                 .then((response) => {
                     const updatedReview = response.body.updatedReview
-                    console.log(updatedReview);
                     const expectedReview = {
                         review_id: 1,
                         title: expect.any(String),
@@ -256,6 +255,29 @@ describe('app', () => {
                     }
                     expect(updatedReview).toMatchObject(expectedReview);
                 });
+            });
+            test('Update votes works when used multiple times', () => {
+                return request(app).patch('/api/reviews/1')
+                .send({ inc_votes: -100})
+                .expect(200)
+                .then(() => {
+                    return request(app).patch('/api/reviews/1').send({inc_votes: 50}).expect(200)
+                    .then((response) => {
+                        const updatedReview = response.body.updatedReview
+                        const expectedReview = {
+                            review_id: 1,
+                            title: expect.any(String),
+                            category: expect.any(String),
+                            designer: expect.any(String),
+                            owner: expect.any(String),
+                            review_body: expect.any(String),
+                            review_img_url: expect.any(String),
+                            created_at: expect.any(String),
+                            votes: -49
+                        }
+                        expect(updatedReview).toMatchObject(expectedReview);
+                    });
+                })
             });
         });
     });
