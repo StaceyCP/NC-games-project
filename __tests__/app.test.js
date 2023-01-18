@@ -150,12 +150,12 @@ describe('app', () => {
             .then(response => {
                 const newComment = response.body.newComment
                 expect.objectContaining({
-                    review_id: expect.any(Number),
+                    review_id: expect(1),
                     comment_id: expect.any(Number),
-                    author: expect.any(String),
-                    body: expect.any(String),
+                    author: expect('bainesface'),
+                    body: expect("This is a review"),
                     created_at: expect.any(String),
-                    votes: expect.any(Number)
+                    votes: expect(0)
                 })
             })
         });
