@@ -159,6 +159,17 @@ describe('app', () => {
                 })
             })
         });
+        test('Database - comments table is updated with the new comment', () => {
+            return request(app).post('/api/reviews/1/comments')
+            .send({ username: 'bainesface', body: "This is a review"})
+            .expect(201)
+            .then(() => {
+                return request(app).get('/api/reviews/1/comments').expect(200).then((response) => {
+                    const comments = response.body.comments
+                    expect(comments.length).toBe(1)
+                })
+            })
+        });
         test('Responds status 400 - username does not exist', () => {
             return request(app).post('/api/reviews/1/comments')
             .send({ username: 'Stacey123', body: "This is a review too"})
