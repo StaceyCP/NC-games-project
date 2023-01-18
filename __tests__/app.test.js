@@ -184,7 +184,7 @@ describe('app', () => {
             })
         });
         test('Responds status 400 bad request when passed a request body that has the invalid fields', () => {
-            return request(app).post('/api/reviews/abc/comments')
+            return request(app).post('/api/reviews/1/comments')
             .send({votes: 20})
             .expect(400)
             .then(response => {
