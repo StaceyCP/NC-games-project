@@ -218,4 +218,23 @@ describe('app', () => {
             });
         });
     });
+    describe('GET /api/users', () => {
+        test('Responds 200 and returns an array', () => {
+            return request(app).get('/api/users').expect(200).then((response) => {
+                const users = response.body.users
+                expect(Array.isArray(users)).toBe(true);
+            })
+        })
+        test('Users array items are objects with keys for username, name and avatar_url', () => {
+            return request(app).get('/api/users').expect(200).then((response) => {
+                const users = response.body.users
+                console.log(users);
+                users.forEach(user => {
+                    expect(user).toHaveProperty('username')
+                    expect(user).toHaveProperty('name')
+                    expect(user).toHaveProperty('avatar_url')
+                })
+            })
+        })
+    })
 });

@@ -43,4 +43,11 @@ const addCommentByReview_id = (review_id, username, body) => {
     })
 }
 
-module.exports = { fetchCategories, fetchReviews, fetchReviewById, fetchCommentsByReview_id, addCommentByReview_id}
+const fetchUsers = () => {
+    const getUsersQueryStr = `SELECT * FROM users`
+    return db.query(getUsersQueryStr).then(result => {
+        return result.rows
+    })
+}
+
+module.exports = { fetchCategories, fetchReviews, fetchReviewById, fetchCommentsByReview_id, addCommentByReview_id, fetchUsers}

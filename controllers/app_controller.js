@@ -4,7 +4,8 @@ const {
     fetchReviews,
     fetchReviewById,
     fetchCommentsByReview_id, 
-    addCommentByReview_id
+    addCommentByReview_id,
+    fetchUsers
 } = require('../models/app_model')
 
 const getCategories = (req, res, next) => {
@@ -53,4 +54,10 @@ const postCommentWithReview_id = (req, res, next) => {
     .catch(next)
 }
 
-module.exports = { getCategories, getReviews, getCommentsByReview_id, getReviewById, postCommentWithReview_id }
+const getUsers = (req, res, next) => {
+    fetchUsers().then((users) => {
+        res.status(200).send({ users })
+    })
+}
+
+module.exports = { getCategories, getReviews, getCommentsByReview_id, getReviewById, postCommentWithReview_id, getUsers }
