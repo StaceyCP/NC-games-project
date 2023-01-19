@@ -11,7 +11,7 @@ exports.fetchCategoriesByName = (category) => {
     const categoryNameQueryStr = `SELECT * FROM categories WHERE slug = $1`
     return db.query(categoryNameQueryStr, [category]).then(results => {
         if (results.rows.length === 0) {
-            return Promise.reject({ status: 400, message: 'Category not found :(' })
+            return Promise.reject({ status: 404, message: 'Category not found :(' })
         }
         return results.rows
     })
@@ -91,3 +91,17 @@ exports.fetchUsers = () => {
     })
 }
 
+exports.fetchCommentsByComment_id = (comment_id) => {
+    const getCommentByComment_idStr = `SELECT * FROM comments WHERE comment_id = $1`
+    return db.query(getCommentByComment_idStr, [comment_id]).then((result) => {
+        if (result.rows.length === 0) {
+            return Promise.reject({status: 404, message: "comment_id not found"})
+        }
+        return result.rows
+    })
+}
+
+exports.removeCommentById = (comment_id) => {
+    const removeCommentQueryStr = `DELETE FROM comments WHERE comment_id = $1`
+    return db.query(removeCommentQueryStr, [comment_id])
+}
