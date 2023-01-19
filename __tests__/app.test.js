@@ -3,7 +3,6 @@ const seed = require('../db/seeds/seed')
 const db = require('../db/connection')
 const data = require('../db/data/test-data')
 const request = require('supertest')
-const { response } = require('express')
 require('jest-sorted')
 
 beforeEach(() => {
