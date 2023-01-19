@@ -89,7 +89,10 @@
     "description": "Allows a post request to made with a request body containing body and username that creates a new comment and adds it to the comments table, this responds with the newly created comment object",
     "queries": [],
     "parameters": ["review_id"],
-    "body": ["body", "username"],
+    "exampleBody": {
+      "username": "bainesface", 
+      "body": "This is a review"
+    },
     "exampleResponse": {
       "newComment": [
         {
@@ -107,7 +110,9 @@
     "description": "Provides an array of all the comments relating to a specific review",
     "queries": [],
     "parameters": ["review_id"],
-    "body": ["inc_votes"],
+    "exampleBody": {
+      "inc_votes": 100
+    },
     "exampleResponse": {
       "updatedReview": [
         {
