@@ -9,7 +9,8 @@ const {
     updateReviewById,
     fetchUsers,
     removeCommentById,
-    fetchCommentsByComment_id
+    fetchCommentsByComment_id,
+    fetchCategoriesByName
 } = require('../models/app_model')
 
 exports.getCategories = (req, res, next) => {
@@ -19,9 +20,19 @@ exports.getCategories = (req, res, next) => {
 }
 
 exports.getReviews = (req, res, next) => {
-    fetchReviews().then((reviews) => {
-        res.status(200).send({reviews})
-    })
+    const { category, sort_by, order } = req.query
+    if (category) {
+        fetchCategoriesByName(category).then(() => {
+            fetchReviews(category, sort_by, order).then((reviews) => {
+                res.status(200).send({reviews})
+            })
+        }).catch(next)
+    } else (
+        fetchReviews(category, sort_by, order).then((reviews) => {
+            res.status(200).send({reviews})
+        })
+        .catch(next)
+    )
 }
 
 exports.getReviewById = (req, res, next) => {
