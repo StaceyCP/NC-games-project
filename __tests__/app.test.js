@@ -136,7 +136,7 @@ describe('app', () => {
     describe('GET /api/review/:review_id', () => {
         test('Responds with a single review object containing the correct properties', () => {
             return request(app).get('/api/reviews/3').expect(200).then((response) => {
-                const review = response.body
+                const review = response.body.review[0]
                 const expectedReview = {
                         review_id: 3,
                         title: 'Ultimate Werewolf',
@@ -154,7 +154,7 @@ describe('app', () => {
         });
         test('Responds with a single review object containing the correct properties', () => {
             return request(app).get('/api/reviews/3').expect(200).then((response) => {
-                const review = response.body
+                const review = response.body.review[0]
                 expect(review).toHaveProperty('comment_count')
                 expect(review.comment_count).toBe("3")
             });
@@ -220,7 +220,7 @@ describe('app', () => {
             .send({ username: 'bainesface', body: "This is a review"})
             .expect(201)
             .then(response => {
-                const newComment = response.body.newComment
+                const newComment = response.body.newComment[0]
                 const expectedComment = {
                     review_id: 1,
                     comment_id: expect.any(Number),
@@ -290,7 +290,7 @@ describe('app', () => {
             .send({ inc_votes: 100})
             .expect(200)
             .then((response) => {
-                const updatedReview = response.body.updatedReview
+                const updatedReview = response.body.updatedReview[0]
                 const expectedReview = {
                     review_id: 3,
                     title: expect.any(String),
@@ -310,7 +310,7 @@ describe('app', () => {
             .send({ inc_votes: -100})
             .expect(200)
             .then((response) => {
-                const updatedReview = response.body.updatedReview
+                const updatedReview = response.body.updatedReview[0]
                 const expectedReview = {
                     review_id: 1,
                     title: expect.any(String),
@@ -332,7 +332,7 @@ describe('app', () => {
             .then(() => {
                 return request(app).patch('/api/reviews/1').send({inc_votes: 50}).expect(200)
                 .then((response) => {
-                    const updatedReview = response.body.updatedReview
+                    const updatedReview = response.body.updatedReview[0]
                     const expectedReview = {
                         review_id: 1,
                         title: expect.any(String),
