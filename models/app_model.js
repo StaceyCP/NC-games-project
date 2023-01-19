@@ -11,7 +11,7 @@ exports.fetchCategoriesByName = (category) => {
     const categoryNameQueryStr = `SELECT * FROM categories WHERE slug = $1`
     return db.query(categoryNameQueryStr, [category]).then(results => {
         if (results.rows.length === 0) {
-            return Promise.reject({ status: 400, message: 'Category not found :(' })
+            return Promise.reject({ status: 404, message: 'Category not found :(' })
         }
         return results.rows
     })

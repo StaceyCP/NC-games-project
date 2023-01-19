@@ -127,8 +127,8 @@ describe('app', () => {
                 expect(reviews.length).toBe(0)
             });
         });
-        test('Responds with 400 error bad request if the category does not currently exist in the database', () => {
-            return request(app).get('/api/reviews?category=ideas').expect(400).then((response) => {
+        test('Responds with 404 error bad request if the category does not currently exist in the database', () => {
+            return request(app).get('/api/reviews?category=ideas').expect(404).then((response) => {
                expect(response.text).toBe("Category not found :(")
             });
         });
