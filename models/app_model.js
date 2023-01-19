@@ -7,13 +7,37 @@ exports.fetchCategories = () => {
     })
 }
 
-exports.fetchReviews = () => {
-    const getReviewsStr = `SELECT reviews.*, COUNT(comments.comment_id) AS comment_count FROM reviews
+exports.fetchCategoriesByName = (category) => {
+    const categoryNameQueryStr = `SELECT * FROM categories WHERE slug = $1`
+    return db.query(categoryNameQueryStr, [category]).then(results => {
+        if (results.rows.length === 0) {
+            return Promise.reject({ status: 400, message: 'Category not found :(' })
+        }
+        return results.rows
+    })
+}
+
+exports.fetchReviews = (category, sort_by = 'created_at', order = 'DESC') => {
+    const acceptedOrderTerms = [ 'ASC', 'DESC', 'asc', 'desc']
+    const acceptedSort_byTerms = ['created_at', 'review_id', 'comment_count', 'owner', 'votes', 'title']
+    const categoryInsert = []
+    let getReviewsStr = `SELECT reviews.*, COUNT(comments.comment_id) AS comment_count FROM reviews
     LEFT JOIN comments
-    ON reviews.review_id = comments.review_id
-    GROUP BY reviews.review_id
-    ORDER BY created_at DESC`
-    return db.query(getReviewsStr).then((result) => {
+    ON reviews.review_id = comments.review_id`
+
+    if (category) {
+        categoryInsert.push(category)
+        getReviewsStr += ` WHERE category = $1`
+    }
+
+    getReviewsStr += ` GROUP BY reviews.review_id 
+    ORDER BY ${sort_by} ${order.toUpperCase()}`
+
+    if (!acceptedOrderTerms.includes(order) || !acceptedSort_byTerms.includes(sort_by)){
+       return Promise.reject({status: 400, message: 'Bad Request - Not an accepted query'})
+    }
+
+    return db.query(getReviewsStr, categoryInsert).then((result) => {
         return result.rows
     })
 }
