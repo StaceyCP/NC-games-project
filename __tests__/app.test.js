@@ -190,11 +190,11 @@ describe('app', () => {
             })
         });
         test('Responds status 400 bad request when passed a request body that is empty', () => {
-            return request(app).post('/api/reviews/abc/comments')
+            return request(app).post('/api/reviews/3/comments')
             .send({})
             .expect(400)
             .then(response => {
-                expect(response.text).toBe('Bad Request!')
+                expect(response.text).toBe('Bad Request - request body is lacking the required fields!')
             })
         });
         test('Responds status 400 bad request when passed a request body that has the invalid fields', () => {
@@ -202,7 +202,7 @@ describe('app', () => {
             .send({votes: 20})
             .expect(400)
             .then(response => {
-                expect(response.text).toBe('Bad Request!')
+                expect(response.text).toBe('Bad Request - request body is lacking the required fields!')
             })
         });
         test('Responds status 404 not found when passed a review_id that is not currently in the data', () => {
@@ -283,7 +283,7 @@ describe('app', () => {
             .send({})
             .expect(400)
             .then((response) => {            
-                expect(response.text).toBe("Bad Request!")
+                expect(response.text).toBe("Bad Request - request body is lacking the required fields!")
                 });
         });
         test('Responds 400 Bad Request! when passed a request body with invalid patch fields', () => {
@@ -291,7 +291,7 @@ describe('app', () => {
             .send({ review_body: "Hello" })
             .expect(400)
             .then((response) => {            
-                expect(response.text).toBe("Bad Request!")
+                expect(response.text).toBe("Bad Request - request body is lacking the required fields!")
                 });
         });
         test('Responds 400 Bad Request! when passed a request body with inc_votes containing invalid data types', () => {
