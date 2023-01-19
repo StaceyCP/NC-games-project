@@ -8,7 +8,8 @@ exports.fetchCategories = () => {
 }
 
 exports.fetchReviews = () => {
-    const getReviewsStr = `SELECT reviews.*, COUNT(comments.comment_id) AS comment_count FROM reviews
+    const getReviewsStr = `
+    SELECT reviews.*, COUNT(comments.comment_id) AS comment_count FROM reviews
     LEFT JOIN comments
     ON reviews.review_id = comments.review_id
     GROUP BY reviews.review_id
@@ -19,13 +20,19 @@ exports.fetchReviews = () => {
 }
 
 exports.fetchReviewById = (review_id) => {
-    const reviewByIdQueryStr = `SELECT * FROM reviews WHERE review_id = $1`
+    const reviewByIdQueryStr = `
+    SELECT reviews.*, COUNT(comments.comment_id) AS comment_count FROM reviews
+    LEFT JOIN comments
+    ON reviews.review_id = comments.review_id
+    WHERE reviews.review_id = $1
+    GROUP BY reviews.review_id`
+
     return db.query(reviewByIdQueryStr, [review_id]).then((result) => {
-        if (result.rows.length === 0) {
-            return Promise.reject({status: 404, message: 'id Not Found!'});
-        } else {
-            return result.rows
-        }
+    if (result.rows.length === 0) {
+        return Promise.reject({status: 404, message: 'id Not Found!'});
+    } else {
+        return result.rows
+    }
     })
 }
 

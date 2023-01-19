@@ -89,6 +89,13 @@ describe('app', () => {
                 expect(review).toMatchObject(expectedReview)
             });
         });
+        test('Responds with a single review object containing the correct properties', () => {
+            return request(app).get('/api/reviews/3').expect(200).then((response) => {
+                const review = response.body
+                expect(review).toHaveProperty('comment_count')
+                expect(review.comment_count).toBe("3")
+            });
+        });
         test('Responds with a 404 error not found when passed an ID that does not currently exist within the db', () => {
             return request(app).get('/api/reviews/9999').expect(404).then((response) => {
                 expect(response.text).toBe('id Not Found!')
