@@ -83,17 +83,19 @@ describe('app', () => {
         test('Responds with a single review object containing the correct properties', () => {
             return request(app).get('/api/reviews/3').expect(200).then((response) => {
                 const review = response.body
-                expect.objectContaining({
-                    review_id: expect.any(Number),
-                    title: expect.any(String),
-                    category: expect.any(String),
-                    designer: expect.any(String),
-                    owner: expect.any(String),
-                    review_body: expect.any(String),
-                    review_url: expect.any(String),
-                    created_at: expect.any(String),
-                    votes: expect.any(Number)
-                })
+                const expectedReview = {
+                        review_id: 3,
+                        title: 'Ultimate Werewolf',
+                        designer: 'Akihisa Okui',
+                        owner: 'bainesface',
+                        review_img_url:
+                          'https://images.pexels.com/photos/5350049/pexels-photo-5350049.jpeg?w=700&h=700',
+                        review_body: "We couldn't find the werewolf!",
+                        category: 'social deduction',
+                        created_at: expect.any(String),
+                        votes: 5
+                }
+                expect(review).toMatchObject(expectedReview)
             });
         });
         test('Responds with a 404 error not found when passed an ID that does not currently exist within the db', () => {
@@ -158,14 +160,15 @@ describe('app', () => {
             .expect(201)
             .then(response => {
                 const newComment = response.body.newComment
-                expect.objectContaining({
-                    review_id: expect.any(Number),
+                const expectedComment = {
+                    review_id: 1,
                     comment_id: expect.any(Number),
-                    author: expect.any(String),
-                    body: expect.any(String),
+                    author: 'bainesface',
+                    body: "This is a review",
                     created_at: expect.any(String),
-                    votes: expect.any(Number)
-                })
+                    votes: 0
+                }
+                expect(newComment).toMatchObject(expectedComment)
             })
         });
         test('Database - comments table is updated with the new comment', () => {
@@ -196,11 +199,11 @@ describe('app', () => {
             })
         });
         test('Responds status 400 bad request when passed a request body that is empty', () => {
-            return request(app).post('/api/reviews/abc/comments')
+            return request(app).post('/api/reviews/3/comments')
             .send({})
             .expect(400)
             .then(response => {
-                expect(response.text).toBe('Bad Request!')
+                expect(response.text).toBe('Bad Request - request body is lacking the required fields!')
             })
         });
         test('Responds status 400 bad request when passed a request body that has the invalid fields', () => {
@@ -208,7 +211,7 @@ describe('app', () => {
             .send({votes: 20})
             .expect(400)
             .then(response => {
-                expect(response.text).toBe('Bad Request!')
+                expect(response.text).toBe('Bad Request - request body is lacking the required fields!')
             })
         });
         test('Responds status 404 not found when passed a review_id that is not currently in the data', () => {
@@ -218,6 +221,111 @@ describe('app', () => {
             .then(response => {
                 expect(response.text).toBe('id Not Found!')
             })
+        });
+    });
+    describe('PATCH /api/reviews/:review_id', () => {
+        test('Responds 200 OK and sends back the updated review for positive numbers in the inc_votes', () => {
+            return request(app).patch('/api/reviews/3')
+            .send({ inc_votes: 100})
+            .expect(200)
+            .then((response) => {
+                const updatedReview = response.body.updatedReview
+                const expectedReview = {
+                    review_id: 3,
+                    title: expect.any(String),
+                    category: expect.any(String),
+                    designer: expect.any(String),
+                    owner: expect.any(String),
+                    review_body: expect.any(String),
+                    review_img_url: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: 105
+                    }
+                expect(updatedReview).toMatchObject(expectedReview)
+                });
+        });
+        test('Responds 200 OK and sends back the updated review for negative numbers in the inc_votes', () => {
+            return request(app).patch('/api/reviews/1')
+            .send({ inc_votes: -100})
+            .expect(200)
+            .then((response) => {
+                const updatedReview = response.body.updatedReview
+                const expectedReview = {
+                    review_id: 1,
+                    title: expect.any(String),
+                    category: expect.any(String),
+                    designer: expect.any(String),
+                    owner: expect.any(String),
+                    review_body: expect.any(String),
+                    review_img_url: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: -99
+                }
+                expect(updatedReview).toMatchObject(expectedReview);
+            });
+        });
+        test('Update votes works when used multiple times', () => {
+            return request(app).patch('/api/reviews/1')
+            .send({ inc_votes: -100})
+            .expect(200)
+            .then(() => {
+                return request(app).patch('/api/reviews/1').send({inc_votes: 50}).expect(200)
+                .then((response) => {
+                    const updatedReview = response.body.updatedReview
+                    const expectedReview = {
+                        review_id: 1,
+                        title: expect.any(String),
+                        category: expect.any(String),
+                        designer: expect.any(String),
+                        owner: expect.any(String),
+                        review_body: expect.any(String),
+                        review_img_url: expect.any(String),
+                        created_at: expect.any(String),
+                        votes: -49
+                    }
+                    expect(updatedReview).toMatchObject(expectedReview);
+                });
+            })
+        });
+        test('Responds 400 Bad Request! when passed an empty request body', () => {
+            return request(app).patch('/api/reviews/3')
+            .send({})
+            .expect(400)
+            .then((response) => {            
+                expect(response.text).toBe("Bad Request - request body is lacking the required fields!")
+                });
+        });
+        test('Responds 400 Bad Request! when passed a request body with invalid patch fields', () => {
+            return request(app).patch('/api/reviews/3')
+            .send({ review_body: "Hello" })
+            .expect(400)
+            .then((response) => {            
+                expect(response.text).toBe("Bad Request - request body is lacking the required fields!")
+                });
+        });
+        test('Responds 400 Bad Request! when passed a request body with inc_votes containing invalid data types', () => {
+            return request(app).patch('/api/reviews/3')
+            .send({ inc_votes: "abc" })
+            .expect(400)
+            .then((response) => {            
+                expect(response.text).toBe("Bad Request!")
+                });
+        });
+        test('Responds 400 Bad Request! when passed a review id containing invalid data types', () => {
+            return request(app).patch('/api/reviews/abc')
+            .send({ inc_votes: 4 })
+            .expect(400)
+            .then((response) => {            
+                expect(response.text).toBe("Bad Request!")
+                });
+        });
+        test('Responds 404 id not found! when passed a review id that does not currently exist', () => {
+            return request(app).patch('/api/reviews/9999')
+            .send({ inc_votes: 4 })
+            .expect(404)
+            .then((response) => {            
+                expect(response.text).toBe("id Not Found!")
+                });
         });
     });
     describe('app error handling', () => {
