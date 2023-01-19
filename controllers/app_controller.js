@@ -5,22 +5,23 @@ const {
     fetchReviewById,
     fetchCommentsByReview_id, 
     addCommentByReview_id,
+    updateReviewById,
     fetchUsers
 } = require('../models/app_model')
 
-const getCategories = (req, res, next) => {
+exports.getCategories = (req, res, next) => {
     fetchCategories().then((categories) => {
         res.status(200).send(categories)
     }).catch(next)
 }
 
-const getReviews = (req, res, next) => {
+exports.getReviews = (req, res, next) => {
     fetchReviews().then((reviews) => {
         res.status(200).send({reviews})
     })
 }
 
-const getReviewById = (req, res, next) => {
+exports.getReviewById = (req, res, next) => {
     const { review_id } = req.params
     fetchReviewById(review_id).then((review) => {
         res.status(200).send(review[0])
@@ -29,7 +30,7 @@ const getReviewById = (req, res, next) => {
     })
 }
 
-const getCommentsByReview_id = (req, res, next) => {
+exports.getCommentsByReview_id = (req, res, next) => {
     const review_id = req.params.review_id
 
     fetchReviewById(review_id)
@@ -42,7 +43,7 @@ const getCommentsByReview_id = (req, res, next) => {
     .catch(next)
 }
 
-const postCommentWithReview_id = (req, res, next) => {
+exports.postCommentWithReview_id = (req, res, next) => {
     const review_id = req.params.review_id
     const { body, username } = req.body
     fetchReviewById(review_id).then(() => {
@@ -54,10 +55,19 @@ const postCommentWithReview_id = (req, res, next) => {
     .catch(next)
 }
 
-const getUsers = (req, res, next) => {
+exports.patchReviewById = (req, res, next) => {
+    const review_id = req.params.review_id
+    const { inc_votes } = req.body
+    updateReviewById(review_id, inc_votes)
+    .then((updatedReview) => {
+        res.status(200).send({ updatedReview })
+    })
+    .catch(next)
+}
+
+exports.getUsers = (req, res, next) => {
     fetchUsers().then((users) => {
         res.status(200).send({ users })
     })
+    .catch(next)
 }
-
-module.exports = { getCategories, getReviews, getCommentsByReview_id, getReviewById, postCommentWithReview_id, getUsers }
