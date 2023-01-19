@@ -1,3 +1,4 @@
+const { response } = require('express')
 const comments = require('../db/data/test-data/comments')
 const { 
     fetchCategories,
@@ -7,6 +8,8 @@ const {
     addCommentByReview_id,
     updateReviewById,
     fetchUsers,
+    removeCommentById,
+    fetchCommentsByComment_id,
     fetchCategoriesByName
 } = require('../models/app_model')
 
@@ -79,6 +82,17 @@ exports.patchReviewById = (req, res, next) => {
 exports.getUsers = (req, res, next) => {
     fetchUsers().then((users) => {
         res.status(200).send({ users })
+    })
+    .catch(next)
+}
+
+exports.deleteCommentById = (req, res, next) => {
+    const { comment_id } = req.params
+    fetchCommentsByComment_id(comment_id).then(() => {
+        removeCommentById(comment_id)
+        .then(() => {
+            res.status(204).send()
+        })
     })
     .catch(next)
 }

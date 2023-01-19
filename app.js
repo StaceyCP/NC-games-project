@@ -7,7 +7,8 @@ const {
     getCommentsByReview_id,
     postCommentWithReview_id,
     patchReviewById,
-    getUsers
+    getUsers,
+    deleteCommentById
 } = require('./controllers/app_controller')
 
 const {
@@ -27,6 +28,8 @@ app.get('/api/users', getUsers)
 app.post('/api/reviews/:review_id/comments', postCommentWithReview_id)
 
 app.patch('/api/reviews/:review_id', patchReviewById)
+
+app.delete('/api/comments/:comment_id', deleteCommentById)
 
 app.all('/*', (req, res) => {
     res.status(404).send('Not Found :(')

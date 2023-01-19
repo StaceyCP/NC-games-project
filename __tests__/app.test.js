@@ -127,8 +127,8 @@ describe('app', () => {
                 expect(reviews.length).toBe(0)
             });
         });
-        test('Responds with 400 error bad request if the category does not currently exist in the database', () => {
-            return request(app).get('/api/reviews?category=ideas').expect(400).then((response) => {
+        test('Responds with 404 error bad request if the category does not currently exist in the database', () => {
+            return request(app).get('/api/reviews?category=ideas').expect(404).then((response) => {
                expect(response.text).toBe("Category not found :(")
             });
         });
@@ -407,7 +407,31 @@ describe('app', () => {
                 })
             })
         })
-    })
+    });
+    describe('DELETE /api/comments/:comment_id', () => {
+        test('Delete request responds with a 204 status - no content', () => {
+            return request(app).delete('/api/comments/1').expect(204)
+        });
+        test('Comment is successfully removed from the database', () => {
+            return request(app).delete('/api/comments/1').expect(204).then(() => {
+                return request(app).get('/api/reviews/2/comments').expect(200).then((response) => {
+                    const comments = response.body.comments
+                    const commentWithIdOf1 = comments.filter((comment) => comment.comment_id === 1)
+                    expect(commentWithIdOf1.length).toBe(0)
+                })
+            })
+        });
+        test('responds with 400 - bad request when passed a comment_id that is the wrong datatype', () => {
+            return request(app).delete('/api/comments/abc').expect(400).then(response => {
+                expect(response.text).toBe('Bad Request!')
+            })
+        })
+        test('responds with 404 - not found when passed a comment_id that does not exist', () => {
+            return request(app).delete('/api/comments/999').expect(404).then(response => {
+                expect(response.text).toBe('comment_id not found')
+            })
+        })
+    });
     describe('app error handling', () => {
         test('Responds with an error 404 incorrect endpoints', () => {
             return request(app).get('/api/cats').expect(404).then((response) => {
