@@ -54,3 +54,10 @@ exports.updateReviewById = (review_id, inc_votes) => {
     })
 }
 
+exports.fetchUsers = () => {
+    const getUsersQueryStr = `SELECT * FROM users`
+    return db.query(getUsersQueryStr).then(result => {
+        return result.rows
+    })
+}
+
