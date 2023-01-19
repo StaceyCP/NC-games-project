@@ -69,6 +69,15 @@ describe('app', () => {
                 expect(reviews).toBeSorted({ key: 'created_at', descending: true})
             });
         });
+        // test('Accepts a categories query that responds with an array of review objects relating to the specified query', () => {
+        //     return request(app).get('/api/reviews?category=dexterity').expect(200).then((response) => {
+        //         const reviews = response.body.reviews
+        //         expect(reviews.length).toBe(1)
+        //         reviews.forEach((review) => {
+        //             expect(review.category).toBe('dexterity')
+        //         })
+        //     });
+        // })
     });
     describe('GET /api/review/:review_id', () => {
         test('Responds with a single review object containing the correct properties', () => {
