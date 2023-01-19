@@ -336,6 +336,25 @@ describe('app', () => {
                 });
         });
     });
+    describe('GET /api/users', () => {
+        test('Responds 200 and returns an array', () => {
+            return request(app).get('/api/users').expect(200).then((response) => {
+                const users = response.body.users
+                expect(Array.isArray(users)).toBe(true);
+            })
+        })
+        test('Users array items are objects with keys for username, name and avatar_url', () => {
+            return request(app).get('/api/users').expect(200).then((response) => {
+                const users = response.body.users
+                expect(users.length).toBe(4)
+                users.forEach(user => {
+                    expect(user).toHaveProperty('username')
+                    expect(user).toHaveProperty('name')
+                    expect(user).toHaveProperty('avatar_url')
+                })
+            })
+        })
+    })
     describe('app error handling', () => {
         test('Responds with an error 404 incorrect endpoints', () => {
             return request(app).get('/api/cats').expect(404).then((response) => {
