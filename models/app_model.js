@@ -7,12 +7,18 @@ exports.fetchCategories = () => {
     })
 }
 
-exports.fetchReviews = () => {
+exports.fetchReviews = (category, sort_by = 'created_at', order = 'DESC') => {
+    const acceptedOrderTerms = [ 'ASC', 'DESC', 'asc', 'desc']
     const getReviewsStr = `SELECT reviews.*, COUNT(comments.comment_id) AS comment_count FROM reviews
     LEFT JOIN comments
     ON reviews.review_id = comments.review_id
     GROUP BY reviews.review_id
-    ORDER BY created_at DESC`
+    ORDER BY created_at ${order.toUpperCase()}`
+
+    if (!acceptedOrderTerms.includes(order)){
+       return Promise.reject({status: 400, message: 'Bad Request - Not an accepted query'})
+    }
+
     return db.query(getReviewsStr).then((result) => {
         return result.rows
     })

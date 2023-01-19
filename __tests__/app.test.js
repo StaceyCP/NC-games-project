@@ -69,15 +69,23 @@ describe('app', () => {
                 expect(reviews).toBeSorted({ key: 'created_at', descending: true})
             });
         });
-        // test('Accepts a categories query that responds with an array of review objects relating to the specified query', () => {
-        //     return request(app).get('/api/reviews?category=dexterity').expect(200).then((response) => {
-        //         const reviews = response.body.reviews
-        //         expect(reviews.length).toBe(1)
-        //         reviews.forEach((review) => {
-        //             expect(review.category).toBe('dexterity')
-        //         })
-        //     });
-        // })
+        test('Accepts an order query that responds with an array of review objects now in ascending order', () => {
+            return request(app).get('/api/reviews?order=ASC').expect(200).then((response) => {
+                const reviews = response.body.reviews
+                expect(reviews).toBeSorted({ key: 'created_at' })
+            });
+        })
+        test('Accepts an order query that responds with an array of review objects ordered when passed in lower case order', () => {
+            return request(app).get('/api/reviews?order=asc').expect(200).then((response) => {
+                const reviews = response.body.reviews
+                expect(reviews).toBeSorted({ key: 'created_at' })
+            });
+        })
+        test('Responds with a 400 error and message stating that the term is not correct', () => {
+            return request(app).get('/api/reviews?order=down').expect(400).then((response) => {
+                expect(response.text).toBe('Bad Request - Not an accepted query')
+            });
+        })
     });
     describe('GET /api/review/:review_id', () => {
         test('Responds with a single review object containing the correct properties', () => {
