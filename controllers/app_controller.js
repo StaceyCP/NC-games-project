@@ -1,5 +1,6 @@
 const { response } = require('express')
 const comments = require('../db/data/test-data/comments')
+const fs = require('fs/promises')
 const { 
     fetchCategories,
     fetchReviews,
@@ -12,6 +13,13 @@ const {
     fetchCommentsByComment_id,
     fetchCategoriesByName
 } = require('../models/app_model')
+
+exports.getApi = (req, res, next) => {
+    fs.readFile('./endpoints.json','UTF-8').then((data) => {
+        res.status(200).send(JSON.parse(data))
+        })
+
+}
 
 exports.getCategories = (req, res, next) => {
     fetchCategories().then((categories) => {

@@ -3,6 +3,7 @@ const seed = require('../db/seeds/seed')
 const db = require('../db/connection')
 const data = require('../db/data/test-data')
 const request = require('supertest')
+const { response } = require('express')
 require('jest-sorted')
 
 beforeEach(() => {
@@ -14,6 +15,21 @@ afterAll(() => {
 })
 
 describe('app', () => {
+    describe('GET /api', () => {
+        test('responds with a 200 status and a json representation of all the available end points', () => {
+            return request(app).get('/api').expect(200).then((response) => {
+                expect(response.body).toHaveProperty('GET /api')
+                expect(response.body).toHaveProperty('GET /api/categories')
+                expect(response.body).toHaveProperty('GET /api/reviews')
+                expect(response.body).toHaveProperty('GET /api/review/:review_id')
+                expect(response.body).toHaveProperty('GET /api/reviews/:review_id/comments')
+                expect(response.body).toHaveProperty('GET /api/users')
+                expect(response.body).toHaveProperty('POST /api/reviews/:review_id/comments')
+                expect(response.body).toHaveProperty('PATCH /api/reviews/:review_id')
+                expect(response.body).toHaveProperty('DELETE /api/comments/comment_id')
+            })
+        });
+    });
     describe('GET /api/categories', () => {
         test('Responds with a 200 status code', () => {
             return request(app).get('/api/categories').expect(200)
