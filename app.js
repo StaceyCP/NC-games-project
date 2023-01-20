@@ -8,7 +8,8 @@ const {
     postCommentWithReview_id,
     patchReviewById,
     getUsers,
-    deleteCommentById
+    deleteCommentById,
+    getApi
 } = require('./controllers/app_controller')
 
 const {
@@ -19,6 +20,7 @@ const {
 
 app.use(express.json())
 
+app.get('/api', getApi)
 app.get('/api/categories', getCategories)
 app.get('/api/reviews', getReviews)
 app.get('/api/reviews/:review_id', getReviewById)

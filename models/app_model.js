@@ -69,7 +69,7 @@ exports.fetchCommentsByReview_id = (review_id) => {
 exports.addCommentByReview_id = (review_id, username, body) => {
     const addNewCommentQueryStr = `INSERT INTO comments (author, body, review_id) VALUES ($1, $2, $3) RETURNING *`
     return db.query(addNewCommentQueryStr, [username, body, review_id]).then((results) => {
-        return results.rows[0]
+        return results.rows
     })
 }
 
@@ -79,7 +79,7 @@ exports.updateReviewById = (review_id, inc_votes) => {
         if (results.rows.length === 0) {
             return Promise.reject({status: 404, message: 'id Not Found!'});
         } else { 
-            return results.rows[0]
+            return results.rows
         }
     })
 }
