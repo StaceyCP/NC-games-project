@@ -8,14 +8,14 @@ To view all of the available endpoints and requests you are able to make to the 
 https://nc-games-api-53j2.onrender.com/api
 This will take you to the full API where you can see a JSON representation of all the currently available end points including example results and example bodies to query the database with.
 
-### Minimum requirements
+## Minimum requirements
 
 For this project ensure you have installed the minimum versions of node and postgres 
 
     Node: v19.0.1
     Postgres: postgres (PostgreSQL) 14.5 (Homebrew)
 
-#### Installation 
+## Installation 
 
 To use this repository clone this repository down on to your local machine 
         git clone https://github.com/StaceyCP/NC-games-project.git
@@ -41,7 +41,7 @@ Check that your package.json contains these dependencies:
 
 The next step to getting up and running is setting up your .env files see instructions below.
 
-##### Database set up and .ENV files
+## Database set up and .ENV files
 
 This Board games API has two databases one for testing and one for development to get these up and running you will need to create two .env files.
 
