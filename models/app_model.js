@@ -91,6 +91,16 @@ exports.fetchUsers = () => {
     })
 }
 
+exports.fetchUserByUsername = (username) => {
+    const getUserByUsernameQueryStr = `SELECT * FROM users WHERE username = $1`
+    return db.query(getUserByUsernameQueryStr, [username]).then((result) => {
+        if (result.rows.length === 0) {
+            return Promise.reject({status:404, message: "username not found :("})
+        }
+        return result.rows
+    })
+}
+
 exports.fetchCommentsByComment_id = (comment_id) => {
     const getCommentByComment_idStr = `SELECT * FROM comments WHERE comment_id = $1`
     return db.query(getCommentByComment_idStr, [comment_id]).then((result) => {
@@ -105,3 +115,4 @@ exports.removeCommentById = (comment_id) => {
     const removeCommentQueryStr = `DELETE FROM comments WHERE comment_id = $1`
     return db.query(removeCommentQueryStr, [comment_id])
 }
+

@@ -1,4 +1,3 @@
-const { response } = require('express')
 const comments = require('../db/data/test-data/comments')
 const fs = require('fs/promises')
 const { 
@@ -11,7 +10,8 @@ const {
     fetchUsers,
     removeCommentById,
     fetchCommentsByComment_id,
-    fetchCategoriesByName
+    fetchCategoriesByName,
+    fetchUserByUsername
 } = require('../models/app_model')
 
 exports.getApi = (req, res, next) => {
@@ -101,6 +101,15 @@ exports.deleteCommentById = (req, res, next) => {
         .then(() => {
             res.status(204).send()
         })
+    })
+    .catch(next)
+}
+
+exports.getUserByUsername = (req, res, next) => {
+    const { username } = req.params
+    fetchUserByUsername(username)
+    .then(user => {
+        res.status(200).send({ user })
     })
     .catch(next)
 }
