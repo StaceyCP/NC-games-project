@@ -3,7 +3,6 @@ const seed = require('../db/seeds/seed')
 const db = require('../db/connection')
 const data = require('../db/data/test-data')
 const request = require('supertest')
-const { response } = require('express')
 require('jest-sorted')
 
 beforeEach(() => {
@@ -230,6 +229,44 @@ describe('app', () => {
             })
         });
     });
+    describe('GET /api/users', () => {
+        test('Responds 200 and returns an array', () => {
+            return request(app).get('/api/users').expect(200).then((response) => {
+                const users = response.body.users
+                expect(Array.isArray(users)).toBe(true);
+            })
+        })
+        test('Users array items are objects with keys for username, name and avatar_url', () => {
+            return request(app).get('/api/users').expect(200).then((response) => {
+                const users = response.body.users
+                expect(users.length).toBe(4)
+                users.forEach(user => {
+                    expect(user).toHaveProperty('username')
+                    expect(user).toHaveProperty('name')
+                    expect(user).toHaveProperty('avatar_url')
+                })
+            })
+        })
+    });
+    describe('GET /api/users/:username', () => {
+        test('Responds with a status 200, and returns a sigle user object that is associated with the username provided', () => {
+            return request(app).get('/api/users/mallionaire').expect(200).then((response) => {
+                const user = response.body.user[0]
+                const expectedUserResponse = {
+                    username: 'mallionaire',
+                    name: 'haz',
+                    avatar_url:
+                        'https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg'
+                }
+                expect(user).toMatchObject(expectedUserResponse)
+            })
+        })
+        test('Responds with a 404 user not found when passed a username that is not within the database', () => {
+            return request(app).get('/api/users/milkyway').expect(404).then((response) => {
+                expect(response.text).toBe('username not found :(')
+            })
+        })
+    });
     describe('POST request to /api/reviews/:review_id/comments', () => {
         test('Responds status 201 and returns the newly created comment', () => {
             return request(app).post('/api/reviews/1/comments')
@@ -404,25 +441,6 @@ describe('app', () => {
                 expect(response.text).toBe("id Not Found!")
                 });
         });
-    });
-    describe('GET /api/users', () => {
-        test('Responds 200 and returns an array', () => {
-            return request(app).get('/api/users').expect(200).then((response) => {
-                const users = response.body.users
-                expect(Array.isArray(users)).toBe(true);
-            })
-        })
-        test('Users array items are objects with keys for username, name and avatar_url', () => {
-            return request(app).get('/api/users').expect(200).then((response) => {
-                const users = response.body.users
-                expect(users.length).toBe(4)
-                users.forEach(user => {
-                    expect(user).toHaveProperty('username')
-                    expect(user).toHaveProperty('name')
-                    expect(user).toHaveProperty('avatar_url')
-                })
-            })
-        })
     });
     describe('DELETE /api/comments/:comment_id', () => {
         test('Delete request responds with a 204 status - no content', () => {

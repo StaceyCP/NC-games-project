@@ -85,6 +85,20 @@
       ]
     }
   },
+  "GET /api/users/:username": {
+    "description": "Provides an array containing a single user object that relates to the username provided",
+    "queries": [],
+    "parameters": ["username"],
+    "exampleResponse": {
+      "user": [
+        {
+          "username": "mallionaire",
+          "name": "haz",
+          "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+        }
+      ]
+    }
+  },
   "POST /api/reviews/:review_id/comments": {
     "description": "Allows a post request to made with a request body containing body and username that creates a new comment and adds it to the comments table, this responds with the newly created comment object",
     "queries": [],
