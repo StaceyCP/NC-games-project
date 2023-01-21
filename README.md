@@ -55,8 +55,11 @@ Once these files have been initiallised you are good to go!
 
 The test file for the db queries within app will re-seed using the available test data 
 If you want to set-up using the developer database there are scripts set up to initialise the database and seed it using the dev data
-    1:    npm run setup-dbs
-    2:    npm run seed 
+    1:    npm run setup-dbs  
+            - This will make the database 
+            
+    2:    npm run seed   
+            - This will seed the database with the developer data
 
 # Testing
 

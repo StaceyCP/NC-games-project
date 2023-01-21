@@ -1,16 +1,6 @@
 const express = require('express')
 const app = express()
-const {
-    getCategories,
-    getReviews,
-    getReviewById,
-    getCommentsByReview_id,
-    postCommentWithReview_id,
-    patchReviewById,
-    getUsers,
-    deleteCommentById,
-    getApi
-} = require('./controllers/app_controller')
+const apiRouter = require('./routes/apiRouter')
 
 const {
     handleServerErrors,
@@ -19,19 +9,9 @@ const {
 } = require('./controllers/error_controller')
 
 app.use(express.json())
+app.use('/api', apiRouter)
 
-app.get('/api', getApi)
-app.get('/api/categories', getCategories)
-app.get('/api/reviews', getReviews)
-app.get('/api/reviews/:review_id', getReviewById)
-app.get('/api/reviews/:review_id/comments', getCommentsByReview_id)
-app.get('/api/users', getUsers)
 
-app.post('/api/reviews/:review_id/comments', postCommentWithReview_id)
-
-app.patch('/api/reviews/:review_id', patchReviewById)
-
-app.delete('/api/comments/:comment_id', deleteCommentById)
 
 app.all('/*', (req, res) => {
     res.status(404).send('Not Found :(')
