@@ -121,7 +121,7 @@
     }
   },
   "PATCH /api/reviews/:review_id": {
-    "description": "Provides an array of all the comments relating to a specific review",
+    "description": "Provides an array containing a single review object with an updated votes key",
     "queries": [],
     "parameters": ["review_id"],
     "exampleBody": {
@@ -139,6 +139,26 @@
           "review_img_url": "https://images.pexels.com/photos/5350049/pexels-photo-5350049.jpeg?w=700&h=700",
           "created_at": "2021-01-18T10:01:41.251Z",
           "votes": 105
+        }
+      ]
+    }
+  },
+  "PATCH /api/comments/:comment_id": {
+    "description": "Provides an array containing a single comment item with an updated votes key",
+    "queries": [],
+    "parameters": ["comment_id"],
+    "exampleBody": {
+      "inc_votes": 100
+    },
+    "exampleResponse": {
+      "updatedComment": [
+        {
+          "comment_id": 3,
+          "body": "I didn't know dogs could play games",
+          "review_id": 3,
+          "author": "philippaclaire9",
+          "votes": 110,
+          "created_at": "2021-01-18T10:09:48.110Z"
         }
       ]
     }

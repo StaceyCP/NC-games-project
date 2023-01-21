@@ -11,7 +11,8 @@ const {
     removeCommentById,
     fetchCommentsByComment_id,
     fetchCategoriesByName,
-    fetchUserByUsername
+    fetchUserByUsername,
+    updateCommentByComment_id
 } = require('../models/app_model')
 
 exports.getApi = (req, res, next) => {
@@ -90,6 +91,16 @@ exports.patchReviewById = (req, res, next) => {
 exports.getUsers = (req, res, next) => {
     fetchUsers().then((users) => {
         res.status(200).send({ users })
+    })
+    .catch(next)
+}
+
+exports.patchCommentById = (req, res, next) => {
+    const { comment_id } = req.params
+    const { inc_votes } = req.body
+    updateCommentByComment_id(comment_id, inc_votes)
+    .then((updatedComment) => {
+        res.status(200).send({ updatedComment })
     })
     .catch(next)
 }

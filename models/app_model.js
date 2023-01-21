@@ -111,6 +111,16 @@ exports.fetchCommentsByComment_id = (comment_id) => {
     })
 }
 
+exports.updateCommentByComment_id = (comment_id, inc_votes) => {
+    const updateCommentQueryStr = `UPDATE comments SET votes = ( votes + $1 ) WHERE comment_id = $2 RETURNING *`
+    return db.query(updateCommentQueryStr, [inc_votes, comment_id]).then(result => {
+        if (result.rows.length === 0) {
+            return Promise.reject({status: 404, message: "comment_id not found"})
+        }
+        return result.rows
+    })
+}
+
 exports.removeCommentById = (comment_id) => {
     const removeCommentQueryStr = `DELETE FROM comments WHERE comment_id = $1`
     return db.query(removeCommentQueryStr, [comment_id])
