@@ -442,6 +442,90 @@ describe('app', () => {
                 });
         });
     });
+    describe('PATCH /api/comments/:comment_id', () => {
+        test('Responds 200 ok sending back the updated comment for positive numbers in the inc_votes', () => {
+            return request(app).patch('/api/comments/3')
+            .send({ inc_votes: 10 })
+            .expect(200)
+            .then((response) => {
+                const updatedComment = response.body.updatedComment[0]
+                const expectedComment = {
+                    comment_id: 3,
+                    body: expect.any(String),
+                    votes: 20,
+                    author: expect.any(String),
+                    review_id: expect.any(Number),
+                    created_at: expect.any(String)
+                }
+                expect(updatedComment).toMatchObject(expectedComment)
+            })
+        });
+        test('Responds 200 ok sending back the updated comment for negative numbers in the inc_votes', () => {
+            return request(app).patch('/api/comments/3')
+            .send({ inc_votes: -10 })
+            .expect(200)
+            .then((response) => {
+                const updatedComment = response.body.updatedComment[0]
+                const expectedComment = {
+                    comment_id: 3,
+                    body: expect.any(String),
+                    votes: 0,
+                    author: expect.any(String),
+                    review_id: expect.any(Number),
+                    created_at: expect.any(String)
+                }
+                expect(updatedComment).toMatchObject(expectedComment)
+            })
+        });
+        test('Inc_vote works in succession', () => {
+            return request(app).patch('/api/comments/3').send({ inc_votes: 20}).expect(200).then(() => {
+                return request(app).patch('/api/comments/3').send({ inc_votes: 20}).expect(200).then((response) => {
+                    const updatedComment = response.body.updatedComment[0]
+                    expect(updatedComment.votes).toBe(50)
+                })
+            })
+        });
+        test('Reponds with a 400 error when passed an empty request body', () => {
+            return request(app).patch('/api/comments/3')
+            .send({})
+            .expect(400)
+            .then(response => {
+                expect(response.text).toBe("Bad Request - request body is lacking the required fields!")
+            })
+        })
+        test('Reponds with a 400 error when passed a request body containing incorrect fields', () => {
+            return request(app).patch('/api/comments/3')
+            .send({ author: "Stacey" })
+            .expect(400)
+            .then(response => {
+                expect(response.text).toBe("Bad Request - request body is lacking the required fields!")
+            })
+        })
+        test('Responds 400 Bad Request! when passed a request body with inc_votes containing invalid data types', () => {
+            return request(app).patch('/api/comments/3')
+            .send({ inc_votes: "abc" })
+            .expect(400)
+            .then((response) => {            
+                expect(response.text).toBe("Bad Request!")
+                });
+        });
+        test('Responds 400 Bad Request! when passed a review id containing invalid data types', () => {
+            return request(app).patch('/api/comments/abc')
+            .send({ inc_votes: 4 })
+            .expect(400)
+            .then((response) => {            
+                expect(response.text).toBe("Bad Request!")
+                });
+        });
+        test('Responds 404 id not found! when passed a review id that does not currently exist', () => {
+            return request(app).patch('/api/comments/9999')
+            .send({ inc_votes: 4 })
+            .expect(404)
+            .then((response) => {            
+                expect(response.text).toBe("comment_id not found")
+            });
+        });
+    });
     describe('DELETE /api/comments/:comment_id', () => {
         test('Delete request responds with a 204 status - no content', () => {
             return request(app).delete('/api/comments/1').expect(204)
