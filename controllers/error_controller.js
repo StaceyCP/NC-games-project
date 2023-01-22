@@ -2,7 +2,7 @@ exports.handlePSQLerrors = (err, req, res, next) => {
     if (err.code === '22P02') {
         res.status(400).send('Bad Request!')
     } else if (err.code === '23503') {
-        res.status(400).send('username does not exist!')
+        res.status(404).send('The request field you entered currently does not exist')
     } else if (err.code === '23502') {
         res.status(400).send('Bad Request - request body is lacking the required fields!')
     } else (
@@ -11,7 +11,7 @@ exports.handlePSQLerrors = (err, req, res, next) => {
 }
 
 exports.handleCustomErrors = (err, req, res, next) => {
-    if (err.message) {
+    if (err.status) {
         res.status(err.status).send(err.message)
     } else (
         next(err)

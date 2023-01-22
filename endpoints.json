@@ -120,6 +120,35 @@
       ]
     }
   },
+  "POST /api/reviews": {
+    "description": "Allows a post request to made with a request body containing body and username that creates a new comment and adds it to the comments table, this responds with the newly created comment object",
+    "queries": [],
+    "parameters": [],
+    "exampleBody": {
+        "owner": "mallionaire",
+        "title": "Super awesome board game review",
+        "review_body": "Super awesome is a super awesome board game",
+        "designer": "Stacey",
+        "category": "children's games",
+        "review_img_url": "https://www.superawesome.com/wp-content/uploads/2020/09/SA_Epic_Logo.jpg"
+    },
+    "exampleResponse": {
+      "newReview": [
+          {
+            "review_id": 12,
+            "title": "Super awesome board game review",
+            "designer": "Stacey",
+            "owner": "mallionaire",
+            "review_body": "Super awesome is a super awesome board game",
+            "review_img_url": "https://www.superawesome.com/wp-content/uploads/2020/09/SA_Epic_Logo.jpg",
+            "category": "children's games",
+            "created_at": "2021-03-27T19:49:48.110Z",
+            "votes": 0,
+            "comment_count": "0"
+        }
+      ]
+    }
+  },
   "PATCH /api/reviews/:review_id": {
     "description": "Provides an array containing a single review object with an updated votes key",
     "queries": [],

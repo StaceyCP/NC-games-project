@@ -1,4 +1,3 @@
-const comments = require('../db/data/test-data/comments')
 const fs = require('fs/promises')
 const { 
     fetchCategories,
@@ -12,7 +11,8 @@ const {
     fetchCommentsByComment_id,
     fetchCategoriesByName,
     fetchUserByUsername,
-    updateCommentByComment_id
+    updateCommentByComment_id, 
+    createReview
 } = require('../models/app_model')
 
 exports.getApi = (req, res, next) => {
@@ -42,6 +42,15 @@ exports.getReviews = (req, res, next) => {
         })
         .catch(next)
     )
+}
+
+exports.postReview = (req, res, next) => {
+    const reviewContent = req.body
+    createReview(reviewContent).then((newReview_id) => {
+        fetchReviewById(newReview_id).then((newReview) => {
+            res.status(201).send({ newReview })
+        })
+    }).catch(next)
 }
 
 exports.getReviewById = (req, res, next) => {
