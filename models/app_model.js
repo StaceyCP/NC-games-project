@@ -42,6 +42,20 @@ exports.fetchReviews = (category, sort_by = 'created_at', order = 'DESC') => {
     })
 }
 
+exports.createReview = (reviewContent) => {
+    const columnTitles = [reviewContent.owner, reviewContent.title, reviewContent.review_body, reviewContent.designer, reviewContent.category]
+    let reviewInsertStr = `INSERT INTO reviews (owner, title, review_body, designer, category) 
+    VALUES ($1, $2, $3, $4, $5) RETURNING review_id`
+    if (reviewContent.review_img_url) {
+        columnTitles.push(reviewContent.review_img_url)
+        reviewInsertStr = `INSERT INTO reviews (owner, title, review_body, designer, category, review_img_url) 
+    VALUES ($1, $2, $3, $4, $5, $6) RETURNING review_id`
+    }
+    return db.query(reviewInsertStr, columnTitles).then(result => {
+        return result.rows[0].review_id;
+    })
+}
+
 exports.fetchReviewById = (review_id) => {
     const reviewByIdQueryStr = `
     SELECT reviews.*, COUNT(comments.comment_id) AS comment_count FROM reviews

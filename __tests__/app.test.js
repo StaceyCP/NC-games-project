@@ -148,7 +148,7 @@ describe('app', () => {
             });
         });
     });
-    describe('GET /api/review/:review_id', () => {
+    describe('GET /api/reviews/:review_id', () => {
         test('Responds with a single review object containing the correct properties', () => {
             return request(app).get('/api/reviews/3').expect(200).then((response) => {
                 const review = response.body.review[0]
@@ -296,12 +296,12 @@ describe('app', () => {
                 })
             })
         });
-        test('Responds status 400 - username does not exist', () => {
+        test('Responds status 404 - The request field you entered currently does not exist when passed a username that does not exist', () => {
             return request(app).post('/api/reviews/1/comments')
             .send({ username: 'Stacey123', body: "This is a review too"})
-            .expect(400)
+            .expect(404)
             .then(response => {
-                expect(response.text).toBe('username does not exist!')
+                expect(response.text).toBe('The request field you entered currently does not exist')
             })
         });
         test('Responds status 400 bad request when passed a review_id that is not the correct data type', () => {
@@ -334,6 +334,95 @@ describe('app', () => {
             .expect(404)
             .then(response => {
                 expect(response.text).toBe('id Not Found!')
+            })
+        });
+    });
+    describe('POST request to /api/reviews', () => {
+        test('Responds with a 201 status code and returns the newly created review', () => {
+            return request(app).post('/api/reviews')
+            .send({
+                owner: "mallionaire",
+                title: "Super awesome board game review",
+                review_body: "Super awesome is a super awesome board game",
+                designer: "Stacey",
+                category: "children's games",
+                review_img_url: "https://www.superawesome.com/wp-content/uploads/2020/09/SA_Epic_Logo.jpg"
+            })
+            .expect(201)
+            .then((response) => {
+                const newReview = response.body.newReview[0]
+                const expectedReview = {
+                    review_id: expect.any(Number),
+                    title: 'Super awesome board game review',
+                    designer: 'Stacey',
+                    owner: 'mallionaire',
+                    review_body: "Super awesome is a super awesome board game",
+                    review_img_url: "https://www.superawesome.com/wp-content/uploads/2020/09/SA_Epic_Logo.jpg",
+                    category: "children's games",
+                    created_at: expect.any(String),
+                    votes: 0,
+                    comment_count: "0"
+                }
+                expect(newReview).toMatchObject(expectedReview)
+            })
+        });
+        test("Returns the newly created review with a default value for the revie_img_url when this is not passed into the request body", () => {
+            return request(app).post('/api/reviews')
+            .send({
+                owner: "mallionaire",
+                title: "Super awesome board game review",
+                review_body: "Super awesome is a super awesome board game",
+                designer: "Stacey",
+                category: "children's games",
+            })
+            .expect(201)
+            .then((response) => {
+                const newReview = response.body.newReview[0]
+                expect(newReview.review_img_url).toBe('https://images.pexels.com/photos/163064/play-stone-network-networked-interactive-163064.jpeg?w=700&h=700')
+            });
+        });
+        test('Responds with a 400 error when passed an empty request body', () => {
+            return request(app).post('/api/reviews').send({}).expect(400).then((response) => {
+                expect(response.text).toBe("Bad Request - request body is lacking the required fields!")
+            })
+        });
+        test('Responds with a 400 error when passed an request body that lacks the required fields', () => {
+            return request(app).post('/api/reviews')
+            .send({
+                owner: "mallionaire",
+                review_body: "Super awesome is a super awesome board game",
+                designer: "Stacey",
+                category: "Doesn't exist",
+            })
+            .expect(400)
+            .then((response) => {
+                expect(response.text).toBe("Bad Request - request body is lacking the required fields!")
+            })
+        });
+        test('Responds with a 404 error when passed an owner that does not exist in the username database', () => {
+            return request(app).post('/api/reviews')
+            .send({
+                owner: "Doesn't exist",
+                title: "Super awesome board game review",
+                review_body: "Super awesome is a super awesome board game",
+                designer: "Stacey",
+                category: "children's books",
+            }).expect(404)
+            .then((response) => {
+                expect(response.text).toBe("The request field you entered currently does not exist")
+            })
+        });
+        test('Responds with a 404 error when passed a category that does not exist in the category database', () => {
+            return request(app).post('/api/reviews')
+            .send({
+                owner: "mallionaire",
+                title: "Super awesome board game review",
+                review_body: "Super awesome is a super awesome board game",
+                designer: "Stacey",
+                category: "Doesn't exist",
+            }).expect(404)
+            .then((response) => {
+                expect(response.text).toBe("The request field you entered currently does not exist")
             })
         });
     });
