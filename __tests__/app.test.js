@@ -54,10 +54,10 @@ describe('app', () => {
                 expect(Array.isArray(response.body.reviews)).toBe(true);
             })
         })
-        test('Each array item has the correct properties including comment_count', () => {
+        test('Responds with 10 items each array item contains the correct properties including comment_count', () => {
             return request(app).get('/api/reviews').expect(200).then((response) => {
                 const reviews = response.body.reviews
-                expect(reviews.length).toBe(13)
+                expect(reviews.length).toBe(10)
                 reviews.forEach((review) => {
                     expect(review).toHaveProperty('owner')
                     expect(review).toHaveProperty('title')
@@ -130,7 +130,7 @@ describe('app', () => {
         test('Accepts a category query that contains spaces - responds with an array of review objects that correspond to the given category', () => {
             return request(app).get('/api/reviews?category=social+deduction').expect(200).then((response) => {
                 const reviews = response.body.reviews
-                expect(reviews.length).toBe(11)
+                expect(reviews.length).toBe(10)
                 reviews.forEach(review => {
                     expect(review.category).toBe("social deduction")
                 })
@@ -147,6 +147,12 @@ describe('app', () => {
                expect(response.text).toBe("Category not found :(")
             });
         });
+        test('Accepts a limit query that limits the number of reviews sent back by the number provided', () => {
+            return request(app).get('/api/reviews?limit=3').expect(200).then((response) => {
+                const reviews = response.body.reviews
+                expect(reviews.length).toBe(3)
+            })
+        })
     });
     describe('GET /api/reviews/:review_id', () => {
         test('Responds with a single review object containing the correct properties', () => {
