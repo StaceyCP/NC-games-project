@@ -152,7 +152,15 @@ describe('app', () => {
                 const reviews = response.body.reviews
                 expect(reviews.length).toBe(3)
             })
-        })
+        });
+        test('Accepts a "p" query that gets the reviews at a specified page', () => {
+            return request(app).get('/api/reviews?p=3&limit=3').expect(200).then((response) => {
+                const reviews = response.body.reviews
+                expect(reviews.length).toBe(3)
+                console.log(reviews);
+                expect(reviews[0].review_id).toBe(1)
+            })
+        });
     });
     describe('GET /api/reviews/:review_id', () => {
         test('Responds with a single review object containing the correct properties', () => {

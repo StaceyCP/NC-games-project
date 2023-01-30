@@ -17,23 +17,30 @@ exports.fetchCategoriesByName = (category) => {
     })
 }
 
-exports.fetchReviews = (category, sort_by = 'created_at', order = 'DESC', limit = 10) => {
+exports.fetchReviews = (category, sort_by = 'created_at', order = 'DESC', limit = 10, p = 0) => {
     const acceptedOrderTerms = [ 'ASC', 'DESC', 'asc', 'desc']
     const acceptedSort_byTerms = ['created_at', 'review_id', 'comment_count', 'owner', 'votes', 'title']
-    const categoryInsert = [limit]
+    const pageCalcalcutlation = limit * p;
+    const categoryInsert = [limit, pageCalcalcutlation];
+    
     let getReviewsStr = `SELECT reviews.*, COUNT(comments.comment_id) AS comment_count FROM reviews
     LEFT JOIN comments
     ON reviews.review_id = comments.review_id`
 
     if (category) {
         categoryInsert.push(category)
-        getReviewsStr += ` WHERE category = $2`
+        getReviewsStr += ` WHERE category = $3`
     }
 
     getReviewsStr += ` GROUP BY reviews.review_id 
     ORDER BY ${sort_by} ${order.toUpperCase()}
-    LIMIT $1`
+    LIMIT $1 OFFSET $2`
     
+    // if(p) {
+    //     const pageCalcalcutlation = limit * p;        
+    //     getReviewsStr += ` OFFSET 9`
+    // }
+
     if (!acceptedOrderTerms.includes(order) || !acceptedSort_byTerms.includes(sort_by)){
        return Promise.reject({status: 400, message: 'Bad Request - Not an accepted query'})
     }

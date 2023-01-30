@@ -29,16 +29,15 @@ exports.getCategories = (req, res, next) => {
 }
 
 exports.getReviews = (req, res, next) => {
-    const { category, sort_by, order, limit } = req.query
-    console.log(limit);
+    const { category, sort_by, order, limit, p } = req.query
     if (category) {
         fetchCategoriesByName(category).then(() => {
-            fetchReviews( category, sort_by, order, limit ).then((reviews) => {
+            fetchReviews( category, sort_by, order, limit, p).then((reviews) => {
                 res.status(200).send({reviews})
             })
         }).catch(next)
     } else (
-        fetchReviews(category, sort_by, order, limit).then((reviews) => {
+        fetchReviews(category, sort_by, order, limit, p).then((reviews) => {
             res.status(200).send({reviews})
         })
         .catch(next)
