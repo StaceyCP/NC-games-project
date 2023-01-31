@@ -22,7 +22,7 @@ exports.fetchReviews = (category, sort_by = 'created_at', order = 'DESC', limit 
     const acceptedSort_byTerms = ['created_at', 'review_id', 'comment_count', 'owner', 'votes', 'title']
     let offsetCalc = 0;
     if (p > 1) {
-        offsetCalc = limit * p
+        offsetCalc = limit * (p - 1)
     }
     const categoryInsert = [limit, offsetCalc];
     
@@ -82,7 +82,7 @@ exports.fetchReviewById = (review_id) => {
 exports.fetchCommentsByReview_id = (review_id, limit = 10, p = 0) => {
     let offsetCalc = 0;
     if (p > 1) {
-        offsetCalc = limit * p
+        offsetCalc = limit * (p - 1)
     }
     const getCommentsByReview_idStr = `SELECT * FROM comments WHERE review_id = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3`
     return db.query(getCommentsByReview_idStr, [review_id, limit, offsetCalc]).then(results => {
