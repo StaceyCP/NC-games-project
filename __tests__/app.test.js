@@ -157,7 +157,7 @@ describe('app', () => {
             return request(app).get('/api/reviews?p=3&limit=3').expect(200).then((response) => {
                 const reviews = response.body.reviews
                 expect(reviews.length).toBe(3)
-                expect(reviews[0].review_id).toBe(1)
+                expect(reviews[0].review_id).toBe(9)
             })
         });
     });
