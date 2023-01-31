@@ -17,21 +17,27 @@ exports.fetchCategoriesByName = (category) => {
     })
 }
 
-exports.fetchReviews = (category, sort_by = 'created_at', order = 'DESC') => {
+exports.fetchReviews = (category, sort_by = 'created_at', order = 'DESC', limit = 10, p = 0) => {
     const acceptedOrderTerms = [ 'ASC', 'DESC', 'asc', 'desc']
     const acceptedSort_byTerms = ['created_at', 'review_id', 'comment_count', 'owner', 'votes', 'title']
-    const categoryInsert = []
+    let offsetCalc = 0;
+    if (p > 1) {
+        offsetCalc = limit * p
+    }
+    const categoryInsert = [limit, offsetCalc];
+    
     let getReviewsStr = `SELECT reviews.*, COUNT(comments.comment_id) AS comment_count FROM reviews
     LEFT JOIN comments
     ON reviews.review_id = comments.review_id`
 
     if (category) {
         categoryInsert.push(category)
-        getReviewsStr += ` WHERE category = $1`
+        getReviewsStr += ` WHERE category = $3`
     }
 
     getReviewsStr += ` GROUP BY reviews.review_id 
-    ORDER BY ${sort_by} ${order.toUpperCase()}`
+    ORDER BY ${sort_by} ${order.toUpperCase()}
+    LIMIT $1 OFFSET $2`
 
     if (!acceptedOrderTerms.includes(order) || !acceptedSort_byTerms.includes(sort_by)){
        return Promise.reject({status: 400, message: 'Bad Request - Not an accepted query'})
@@ -73,9 +79,13 @@ exports.fetchReviewById = (review_id) => {
     })
 }
 
-exports.fetchCommentsByReview_id = (review_id) => {
-    const getCommentsByReview_idStr = `SELECT * FROM comments WHERE review_id = $1 ORDER BY created_at DESC`
-    return db.query(getCommentsByReview_idStr, [review_id]).then(results => {
+exports.fetchCommentsByReview_id = (review_id, limit = 10, p = 0) => {
+    let offsetCalc = 0;
+    if (p > 1) {
+        offsetCalc = limit * p
+    }
+    const getCommentsByReview_idStr = `SELECT * FROM comments WHERE review_id = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3`
+    return db.query(getCommentsByReview_idStr, [review_id, limit, offsetCalc]).then(results => {
         return results.rows
     })
 }

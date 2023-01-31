@@ -54,10 +54,10 @@ describe('app', () => {
                 expect(Array.isArray(response.body.reviews)).toBe(true);
             })
         })
-        test('Each array item has the correct properties including comment_count', () => {
+        test('Responds with 10 items each array item contains the correct properties including comment_count', () => {
             return request(app).get('/api/reviews').expect(200).then((response) => {
                 const reviews = response.body.reviews
-                expect(reviews.length).toBe(13)
+                expect(reviews.length).toBe(10)
                 reviews.forEach((review) => {
                     expect(review).toHaveProperty('owner')
                     expect(review).toHaveProperty('title')
@@ -130,7 +130,7 @@ describe('app', () => {
         test('Accepts a category query that contains spaces - responds with an array of review objects that correspond to the given category', () => {
             return request(app).get('/api/reviews?category=social+deduction').expect(200).then((response) => {
                 const reviews = response.body.reviews
-                expect(reviews.length).toBe(11)
+                expect(reviews.length).toBe(10)
                 reviews.forEach(review => {
                     expect(review.category).toBe("social deduction")
                 })
@@ -146,6 +146,19 @@ describe('app', () => {
             return request(app).get('/api/reviews?category=ideas').expect(404).then((response) => {
                expect(response.text).toBe("Category not found :(")
             });
+        });
+        test('Accepts a limit query that limits the number of reviews sent back by the number provided', () => {
+            return request(app).get('/api/reviews?limit=3').expect(200).then((response) => {
+                const reviews = response.body.reviews
+                expect(reviews.length).toBe(3)
+            })
+        });
+        test('Accepts a "p" query that gets the reviews at a specified page', () => {
+            return request(app).get('/api/reviews?p=3&limit=3').expect(200).then((response) => {
+                const reviews = response.body.reviews
+                expect(reviews.length).toBe(3)
+                expect(reviews[0].review_id).toBe(1)
+            })
         });
     });
     describe('GET /api/reviews/:review_id', () => {
@@ -226,6 +239,18 @@ describe('app', () => {
             return request(app).get('/api/reviews/3/comments').expect(200).then(response => {
                 const comments = response.body.comments
                 expect(comments).toBeSorted({ key: 'created_at', descending: true})
+            })
+        });
+        test('Accepts a limit query that limits the number of reviews sent back by the number provided', () => {
+            return request(app).get('/api/reviews/2/comments?limit=2').expect(200).then((response) => {
+                const comments = response.body.comments
+                expect(comments.length).toBe(2)
+            })
+        });
+        test('Accepts a "p" query that gets the reviews at a specified page', () => {
+            return request(app).get('/api/reviews/2/comments?p=1&limit=2').expect(200).then((response) => {
+                const comments = response.body.comments
+                expect(comments[0].review_id).toBe(2)
             })
         });
     });

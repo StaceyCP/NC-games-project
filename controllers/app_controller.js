@@ -29,15 +29,15 @@ exports.getCategories = (req, res, next) => {
 }
 
 exports.getReviews = (req, res, next) => {
-    const { category, sort_by, order } = req.query
+    const { category, sort_by, order, limit, p } = req.query
     if (category) {
         fetchCategoriesByName(category).then(() => {
-            fetchReviews(category, sort_by, order).then((reviews) => {
+            fetchReviews( category, sort_by, order, limit, p).then((reviews) => {
                 res.status(200).send({reviews})
             })
         }).catch(next)
     } else (
-        fetchReviews(category, sort_by, order).then((reviews) => {
+        fetchReviews(category, sort_by, order, limit, p).then((reviews) => {
             res.status(200).send({reviews})
         })
         .catch(next)
@@ -64,10 +64,10 @@ exports.getReviewById = (req, res, next) => {
 
 exports.getCommentsByReview_id = (req, res, next) => {
     const review_id = req.params.review_id
-
+    const { limit, p} = req.query
     fetchReviewById(review_id)
     .then(()=>{
-        return fetchCommentsByReview_id(review_id)
+        return fetchCommentsByReview_id(review_id, limit, p)
     })
     .then((comments) => {
         res.status(200).send({ comments })
