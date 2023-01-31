@@ -64,10 +64,10 @@ exports.getReviewById = (req, res, next) => {
 
 exports.getCommentsByReview_id = (req, res, next) => {
     const review_id = req.params.review_id
-
+    const { limit, p} = req.query
     fetchReviewById(review_id)
     .then(()=>{
-        return fetchCommentsByReview_id(review_id)
+        return fetchCommentsByReview_id(review_id, limit, p)
     })
     .then((comments) => {
         res.status(200).send({ comments })

@@ -157,7 +157,6 @@ describe('app', () => {
             return request(app).get('/api/reviews?p=3&limit=3').expect(200).then((response) => {
                 const reviews = response.body.reviews
                 expect(reviews.length).toBe(3)
-                console.log(reviews);
                 expect(reviews[0].review_id).toBe(1)
             })
         });
@@ -240,6 +239,18 @@ describe('app', () => {
             return request(app).get('/api/reviews/3/comments').expect(200).then(response => {
                 const comments = response.body.comments
                 expect(comments).toBeSorted({ key: 'created_at', descending: true})
+            })
+        });
+        test('Accepts a limit query that limits the number of reviews sent back by the number provided', () => {
+            return request(app).get('/api/reviews/2/comments?limit=2').expect(200).then((response) => {
+                const comments = response.body.comments
+                expect(comments.length).toBe(2)
+            })
+        });
+        test('Accepts a "p" query that gets the reviews at a specified page', () => {
+            return request(app).get('/api/reviews/2/comments?p=1&limit=2').expect(200).then((response) => {
+                const comments = response.body.comments
+                expect(comments[0].review_id).toBe(2)
             })
         });
     });
