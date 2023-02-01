@@ -451,6 +451,39 @@ describe('app', () => {
             })
         });
     });
+    describe('POST request to /api/categories', () => {
+        test('should respond with a 201 status code and the newly created category object', () => {
+            return request(app).post('/api/categories')
+            .send({
+                slug: "card games",
+                description: "Games played with cards"
+            })
+            .expect(201)
+            .then((res) => {
+                const newCategory = res.body.newCategory
+                const expectedCategory = {
+                    slug: "card games",
+                    description: "Games played with cards"
+                }
+                expect(newCategory).toMatchObject(expectedCategory)
+            })
+        });
+        test('Responds with a 400 error when passed an empty request body', () => {
+            return request(app).post('/api/categories').send({}).expect(400).then((response) => {
+                expect(response.text).toBe("Bad Request - request body is lacking the required fields!")
+            })
+        });
+        test('Responds with a 400 error when passed an request body that lacks the required fields', () => {
+            return request(app).post('/api/reviews')
+            .send({
+                slug: "Mistake",
+            })
+            .expect(400)
+            .then((response) => {
+                expect(response.text).toBe("Bad Request - request body is lacking the required fields!")
+            })
+        });
+    });
     describe('PATCH /api/reviews/:review_id', () => {
         test('Responds 200 OK and sends back the updated review for positive numbers in the inc_votes', () => {
             return request(app).patch('/api/reviews/3')

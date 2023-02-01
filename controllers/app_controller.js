@@ -12,7 +12,8 @@ const {
     fetchCategoriesByName,
     fetchUserByUsername,
     updateCommentByComment_id, 
-    createReview
+    createReview,
+    createCategory
 } = require('../models/app_model')
 
 exports.getApi = (req, res, next) => {
@@ -25,6 +26,13 @@ exports.getApi = (req, res, next) => {
 exports.getCategories = (req, res, next) => {
     fetchCategories().then((categories) => {
         res.status(200).send(categories)
+    }).catch(next)
+}
+
+exports.postCategory = (req, res, next) => {
+    const categoryContent = req.body
+    createCategory(categoryContent).then((newCategory) => {
+        res.status(201).send({newCategory})
     }).catch(next)
 }
 

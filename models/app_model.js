@@ -62,6 +62,14 @@ exports.createReview = (reviewContent) => {
     })
 }
 
+exports.createCategory = (categoryContent) => {
+    const categoryInsertStr = `INSERT INTO categories (slug, description)
+    VALUES ($1, $2) RETURNING *`
+    return db.query(categoryInsertStr, [categoryContent.slug, categoryContent.description]).then((response) => {
+        return response.rows[0]
+    })
+}
+
 exports.fetchReviewById = (review_id) => {
     const reviewByIdQueryStr = `
     SELECT reviews.*, COUNT(comments.comment_id) AS comment_count FROM reviews
