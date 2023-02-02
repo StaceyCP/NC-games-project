@@ -69,6 +69,7 @@ describe('app', () => {
                     expect(review).toHaveProperty('designer')
                     expect(review).toHaveProperty('comment_count')
                 })
+                expect(response.body.total_count).toBe(10);
             });
         });
         test('Comment_count returns the correct value', () => {
