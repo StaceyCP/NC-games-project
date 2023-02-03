@@ -26,7 +26,7 @@ exports.fetchReviews = (category, sort_by = 'created_at', order = 'DESC', limit 
     }
     const categoryInsert = [limit, offsetCalc];
     
-    let getReviewsStr = `SELECT reviews.*, COUNT(comments.comment_id) AS comment_count FROM reviews
+    let getReviewsStr = `SELECT reviews.*, COUNT(*) OVER() AS total_count, COUNT(comments.comment_id) AS comment_count FROM reviews
     LEFT JOIN comments
     ON reviews.review_id = comments.review_id`
 

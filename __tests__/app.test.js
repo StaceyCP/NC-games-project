@@ -68,8 +68,8 @@ describe('app', () => {
                     expect(review).toHaveProperty('votes')
                     expect(review).toHaveProperty('designer')
                     expect(review).toHaveProperty('comment_count')
+                    expect(review.total_count).toBe("13");
                 })
-                expect(response.body.total_count).toBe(10);
             });
         });
         test('Comment_count returns the correct value', () => {

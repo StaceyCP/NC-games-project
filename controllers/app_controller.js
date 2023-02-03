@@ -41,12 +41,12 @@ exports.getReviews = (req, res, next) => {
     if (category) {
         fetchCategoriesByName(category).then(() => {
             fetchReviews( category, sort_by, order, limit, p).then((reviews) => {
-                res.status(200).send({reviews, total_count: reviews.length})
+                res.status(200).send({reviews})
             })
         }).catch(next)
     } else (
         fetchReviews(category, sort_by, order, limit, p).then((reviews) => {
-            res.status(200).send({reviews, total_count: reviews.length})
+            res.status(200).send({reviews})
         })
         .catch(next)
     )
