@@ -1,19 +1,20 @@
 const fs = require('fs/promises')
 const { 
     fetchCategories,
+    fetchCategoriesByName,
+    createCategory,
     fetchReviews,
+    createReview,
     fetchReviewById,
+    removeReviewById,
+    updateReviewById,
     fetchCommentsByReview_id, 
     addCommentByReview_id,
-    updateReviewById,
-    fetchUsers,
     removeCommentById,
     fetchCommentsByComment_id,
-    fetchCategoriesByName,
-    fetchUserByUsername,
     updateCommentByComment_id, 
-    createReview,
-    createCategory
+    fetchUsers,
+    fetchUserByUsername
 } = require('../models/app_model')
 
 exports.getApi = (req, res, next) => {
@@ -68,6 +69,15 @@ exports.getReviewById = (req, res, next) => {
     }).catch(err => {
         next(err)
     })
+}
+
+exports.deleteReviewById= (req, res, next) => {
+    const {review_id} = req.params
+    fetchReviewById(review_id).then(() => {
+        removeReviewById(review_id).then(() => {
+            res.status(204).send()
+        })
+    }).catch(next)
 }
 
 exports.getCommentsByReview_id = (req, res, next) => {

@@ -149,6 +149,22 @@
       ]
     }
   },
+  "POST /api/categories": {
+    "description": "Allows a post request to made with a request body containing a category name and description and allows users to create a review catgeory",
+    "queries": [],
+    "parameters": [],
+    "exampleBody": {
+      "slug": "category name here",
+      "description": "description here"
+    },
+    "exampleResponse": {
+      "newCategory": [
+          { "slug": "card games", 
+          "description": "Games played with cards" 
+        }
+      ]
+    }
+  },
   "PATCH /api/reviews/:review_id": {
     "description": "Provides an array containing a single review object with an updated votes key",
     "queries": [],
@@ -196,6 +212,12 @@
     "description": "Deletes the specified comment from the database",
     "queries": [],
     "parameters": ["comment_id"],
+    "exampleResponse": 204
+  },
+  "DELETE /api/reviews/review_id": {
+    "description": "Deletes the specified review from the database",
+    "queries": [],
+    "parameters": ["review_id"],
     "exampleResponse": 204
   }
 }
