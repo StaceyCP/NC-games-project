@@ -1,7 +1,7 @@
 const { app } = require('../app')
-const seed = require('../db/seeds/seed')
 const db = require('../db/connection')
 const data = require('../db/data/test-data')
+const seed = require('../db/seeds/seed')
 const request = require('supertest')
 require('jest-sorted')
 
@@ -695,6 +695,29 @@ describe('app', () => {
         test('responds with 404 - not found when passed a comment_id that does not exist', () => {
             return request(app).delete('/api/comments/999').expect(404).then(response => {
                 expect(response.text).toBe('comment_id not found')
+            })
+        })
+    });
+    describe('DELETE /api/comments/:comment_id', () => {
+        test('Delete request responds with a 204 status - no content', () => {
+            return request(app).delete('/api/reviews/1').expect(204)
+        });
+        test('Review is successfully removed from the database', () => {
+            return request(app).delete('/api/reviews/1').expect(204).then(() => {
+                return request(app).get('/api/reviews/1').expect(404).then((response) => {
+                    const res = response.text
+                    expect(response.text).toEqual('id Not Found!')
+                })
+            })
+        });
+        test('responds with 400 - bad request when passed a review_id that is the wrong datatype', () => {
+            return request(app).delete('/api/reviews/abc').expect(400).then(response => {
+                expect(response.text).toBe('Bad Request!')
+            })
+        })
+        test('responds with 404 - not found when passed a comment_id that does not exist', () => {
+            return request(app).delete('/api/reviews/999').expect(404).then(response => {
+                expect(response.text).toBe('id Not Found!')
             })
         })
     });

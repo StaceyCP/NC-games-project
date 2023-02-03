@@ -87,6 +87,11 @@ exports.fetchReviewById = (review_id) => {
     })
 }
 
+exports.removeReviewById = (review_id) => {
+    const removeReviewByIdQueryStr = `DELETE FROM reviews WHERE review_id = $1`
+    return db.query(removeReviewByIdQueryStr, [review_id])
+}
+
 exports.fetchCommentsByReview_id = (review_id, limit = 10, p = 0) => {
     let offsetCalc = 0;
     if (p > 1) {
