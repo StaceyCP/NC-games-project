@@ -22,7 +22,7 @@ exports.fetchReviews = (category, sort_by = 'created_at', order = 'DESC', limit 
     const acceptedSort_byTerms = ['created_at', 'review_id', 'comment_count', 'owner', 'votes', 'title']
     let offsetCalc = 0;
     if (p > 1) {
-        offsetCalc = limit * (p - 1)
+        offsetCalc = limit * (+p - 1)
     }
     const categoryInsert = [limit, offsetCalc];
     
@@ -41,6 +41,10 @@ exports.fetchReviews = (category, sort_by = 'created_at', order = 'DESC', limit 
 
     if (!acceptedOrderTerms.includes(order) || !acceptedSort_byTerms.includes(sort_by)){
        return Promise.reject({status: 400, message: 'Bad Request - Not an accepted query'})
+    }
+
+    if (p < 0 || isNaN(+p)) {
+        return Promise.reject({status: 400, message: 'Bad Request - p query contains terms that are not accepted'})
     }
 
     return db.query(getReviewsStr, categoryInsert).then((result) => {
@@ -98,6 +102,11 @@ exports.fetchCommentsByReview_id = (review_id, limit = 10, p = 0) => {
         offsetCalc = limit * (p - 1)
     }
     const getCommentsByReview_idStr = `SELECT * FROM comments WHERE review_id = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3`
+
+    if (p < 0 || isNaN(+p)) {
+        return Promise.reject({status: 400, message: 'Bad Request - p query contains terms that are not accepted'})
+    }
+    
     return db.query(getCommentsByReview_idStr, [review_id, limit, offsetCalc]).then(results => {
         return results.rows
     })

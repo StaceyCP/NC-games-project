@@ -161,6 +161,26 @@ describe('app', () => {
                 expect(reviews[0].review_id).toBe(9)
             })
         });
+        test('returns a 400 - bead request error when passed a limit that is not the correct data type', () => {
+            return request(app).get('/api/reviews?limit=abc').expect(400).then((response) => {
+                expect(response.text).toBe('Bad Request!')
+            })
+        })
+        test('returns a 400 - bead request error when passed a limit that is a negative number', () => {
+            return request(app).get('/api/reviews?limit=-3').expect(400).then((response) => {
+                expect(response.text).toBe('Bad Request - limit must not be negative')
+            })
+        })
+        test('returns a 400 - bead request error when passed a p that is not the correct data type', () => {
+            return request(app).get('/api/reviews?limit=3&p=abc').expect(400).then((response) => {
+                expect(response.text).toBe('Bad Request - p query contains terms that are not accepted')
+            })
+        })
+        test('returns a 400 - bead request error when passed a p that is a negative number', () => {
+            return request(app).get('/api/reviews?limit=3&p=-3').expect(400).then((response) => {
+                expect(response.text).toBe('Bad Request - p query contains terms that are not accepted')
+            })
+        })
     });
     describe('GET /api/reviews/:review_id', () => {
         test('Responds with a single review object containing the correct properties', () => {
@@ -254,6 +274,26 @@ describe('app', () => {
                 expect(comments[0].review_id).toBe(2)
             })
         });
+        test('returns a 400 - bead request error when passed a limit that is not the correct data type', () => {
+            return request(app).get('/api/reviews/1/comments?limit=abc').expect(400).then((response) => {
+                expect(response.text).toBe('Bad Request!')
+            })
+        })
+        test('returns a 400 - bead request error when passed a limit that is a negative number', () => {
+            return request(app).get('/api/reviews/1/comments?limit=-5').expect(400).then((response) => {
+                expect(response.text).toBe('Bad Request - limit must not be negative')
+            })
+        })
+        test('returns a 400 - bead request error when passed a p that is not the correct data type', () => {
+            return request(app).get('/api/reviews/1/comments?p=abc').expect(400).then((response) => {
+                expect(response.text).toBe('Bad Request - p query contains terms that are not accepted')
+            })
+        })
+        test('returns a 400 - bead request error when passed a p that is a negative number', () => {
+            return request(app).get('/api/reviews/1/comments?p=-5').expect(400).then((response) => {
+                expect(response.text).toBe('Bad Request - p query contains terms that are not accepted')
+            })
+        })
     });
     describe('GET /api/users', () => {
         test('Responds 200 and returns an array', () => {
