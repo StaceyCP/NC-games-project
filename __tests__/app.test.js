@@ -161,22 +161,22 @@ describe('app', () => {
                 expect(reviews[0].review_id).toBe(9)
             })
         });
-        test('returns a 400 - bead request error when passed a limit that is not the correct data type', () => {
+        test('returns a 400 - bad request error when passed a limit that is not the correct data type', () => {
             return request(app).get('/api/reviews?limit=abc').expect(400).then((response) => {
                 expect(response.text).toBe('Bad Request!')
             })
         })
-        test('returns a 400 - bead request error when passed a limit that is a negative number', () => {
+        test('returns a 400 - bad request error when passed a limit that is a negative number', () => {
             return request(app).get('/api/reviews?limit=-3').expect(400).then((response) => {
                 expect(response.text).toBe('Bad Request - limit must not be negative')
             })
         })
-        test('returns a 400 - bead request error when passed a p that is not the correct data type', () => {
+        test('returns a 400 - bad request error when passed a p that is not the correct data type', () => {
             return request(app).get('/api/reviews?limit=3&p=abc').expect(400).then((response) => {
                 expect(response.text).toBe('Bad Request - p query contains terms that are not accepted')
             })
         })
-        test('returns a 400 - bead request error when passed a p that is a negative number', () => {
+        test('returns a 400 - bad request error when passed a p that is a negative number', () => {
             return request(app).get('/api/reviews?limit=3&p=-3').expect(400).then((response) => {
                 expect(response.text).toBe('Bad Request - p query contains terms that are not accepted')
             })
@@ -274,22 +274,22 @@ describe('app', () => {
                 expect(comments[0].review_id).toBe(2)
             })
         });
-        test('returns a 400 - bead request error when passed a limit that is not the correct data type', () => {
+        test('returns a 400 - bad request error when passed a limit that is not the correct data type', () => {
             return request(app).get('/api/reviews/1/comments?limit=abc').expect(400).then((response) => {
                 expect(response.text).toBe('Bad Request!')
             })
         })
-        test('returns a 400 - bead request error when passed a limit that is a negative number', () => {
+        test('returns a 400 - bad request error when passed a limit that is a negative number', () => {
             return request(app).get('/api/reviews/1/comments?limit=-5').expect(400).then((response) => {
                 expect(response.text).toBe('Bad Request - limit must not be negative')
             })
         })
-        test('returns a 400 - bead request error when passed a p that is not the correct data type', () => {
+        test('returns a 400 - bad request error when passed a p that is not the correct data type', () => {
             return request(app).get('/api/reviews/1/comments?p=abc').expect(400).then((response) => {
                 expect(response.text).toBe('Bad Request - p query contains terms that are not accepted')
             })
         })
-        test('returns a 400 - bead request error when passed a p that is a negative number', () => {
+        test('returns a 400 - bad request error when passed a p that is a negative number', () => {
             return request(app).get('/api/reviews/1/comments?p=-5').expect(400).then((response) => {
                 expect(response.text).toBe('Bad Request - p query contains terms that are not accepted')
             })
@@ -432,7 +432,7 @@ describe('app', () => {
                 expect(newReview).toMatchObject(expectedReview)
             })
         });
-        test("Returns the newly created review with a default value for the revie_img_url when this is not passed into the request body", () => {
+        test("Returns the newly created review with a default value for the review_img_url when this is not passed into the request body", () => {
             return request(app).post('/api/reviews')
             .send({
                 owner: "mallionaire",
@@ -489,6 +489,58 @@ describe('app', () => {
             }).expect(404)
             .then((response) => {
                 expect(response.text).toBe("The request field you entered currently does not exist")
+            })
+        });
+    });
+    describe('POST request to /api/users', () => {
+        test('Responds with a 201 status code and returns the newly created user', () => {
+            return request(app).post('/api/users')
+            .send({
+                username: 'tickle122',
+                name: 'Tom Tickle',
+                avatar_url:
+                  'https://vignette.wikia.nocookie.net/mrmen/images/d/d6/Mr-Tickle-9a.png/revision/latest?cb=20180127221953',
+              })
+            .expect(201)
+            .then((response) => {
+                const newUser = response.body.newUser
+                const expectedUser = {
+                    username: 'tickle122',
+                    name: 'Tom Tickle',
+                    avatar_url:
+                      'https://vignette.wikia.nocookie.net/mrmen/images/d/d6/Mr-Tickle-9a.png/revision/latest?cb=20180127221953',
+                  }
+                expect(newUser).toMatchObject(expectedUser)
+            })
+        });
+        test('Responds with a 400 error when passed an empty request body', () => {
+            return request(app).post('/api/users').send({}).expect(400).then((response) => {
+                expect(response.text).toBe("Bad Request - request body is lacking the required fields!")
+            })
+        });
+        test('Responds with a 400 error when passed an request body that lacks the required fields', () => {
+            return request(app).post('/api/users')
+            .send({
+                name: 'Tom Tickle',
+                avatar_url:
+                  'https://vignette.wikia.nocookie.net/mrmen/images/d/d6/Mr-Tickle-9a.png/revision/latest?cb=20180127221953',
+              })
+            .expect(400)
+            .then((response) => {
+                expect(response.text).toBe("Bad Request - request body is lacking the required fields!")
+            })
+        });
+        test('Responds with a 400 status code and passed a username that currently exists in the db', () => {
+            return request(app).post('/api/users')
+            .send({
+                username: 'mallionaire',
+                name: 'haz',
+                avatar_url:
+                  'https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg'
+              })
+            .expect(400)
+            .then((response) => {
+                expect(response.text).toBe('Sorry this username is taken :(')
             })
         });
     });

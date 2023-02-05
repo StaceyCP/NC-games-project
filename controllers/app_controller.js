@@ -5,6 +5,7 @@ const {
     createCategory,
     fetchReviews,
     createReview,
+    createUser,
     fetchReviewById,
     removeReviewById,
     updateReviewById,
@@ -27,13 +28,6 @@ exports.getApi = (req, res, next) => {
 exports.getCategories = (req, res, next) => {
     fetchCategories().then((categories) => {
         res.status(200).send(categories)
-    }).catch(next)
-}
-
-exports.postCategory = (req, res, next) => {
-    const categoryContent = req.body
-    createCategory(categoryContent).then((newCategory) => {
-        res.status(201).send({newCategory})
     }).catch(next)
 }
 
@@ -93,6 +87,29 @@ exports.getCommentsByReview_id = (req, res, next) => {
     .catch(next)
 }
 
+exports.getUsers = (req, res, next) => {
+    fetchUsers().then((users) => {
+        res.status(200).send({ users })
+    })
+    .catch(next)
+}
+
+exports.getUserByUsername = (req, res, next) => {
+    const { username } = req.params
+    fetchUserByUsername(username)
+    .then(user => {
+        res.status(200).send({ user })
+    })
+    .catch(next)
+}
+
+exports.postCategory = (req, res, next) => {
+    const categoryContent = req.body
+    createCategory(categoryContent).then((newCategory) => {
+        res.status(201).send({newCategory})
+    }).catch(next)
+}
+
 exports.postCommentWithReview_id = (req, res, next) => {
     const review_id = req.params.review_id
     const { body, username } = req.body
@@ -101,6 +118,23 @@ exports.postCommentWithReview_id = (req, res, next) => {
     })
     .then(newComment => {
         res.status(201).send({newComment})
+    })
+    .catch(next)
+}
+
+exports.postUser = (req, res, next) => {
+    const userToAdd = req.body;
+    createUser(userToAdd).then((newUser) => {
+        res.status(201).send({ newUser })
+    }).catch(next)
+}
+
+exports.patchCommentById = (req, res, next) => {
+    const { comment_id } = req.params
+    const { inc_votes } = req.body
+    updateCommentByComment_id(comment_id, inc_votes)
+    .then((updatedComment) => {
+        res.status(200).send({ updatedComment })
     })
     .catch(next)
 }
@@ -115,23 +149,6 @@ exports.patchReviewById = (req, res, next) => {
     .catch(next)
 }
 
-exports.getUsers = (req, res, next) => {
-    fetchUsers().then((users) => {
-        res.status(200).send({ users })
-    })
-    .catch(next)
-}
-
-exports.patchCommentById = (req, res, next) => {
-    const { comment_id } = req.params
-    const { inc_votes } = req.body
-    updateCommentByComment_id(comment_id, inc_votes)
-    .then((updatedComment) => {
-        res.status(200).send({ updatedComment })
-    })
-    .catch(next)
-}
-
 exports.deleteCommentById = (req, res, next) => {
     const { comment_id } = req.params
     fetchCommentsByComment_id(comment_id).then(() => {
@@ -139,15 +156,6 @@ exports.deleteCommentById = (req, res, next) => {
         .then(() => {
             res.status(204).send()
         })
-    })
-    .catch(next)
-}
-
-exports.getUserByUsername = (req, res, next) => {
-    const { username } = req.params
-    fetchUserByUsername(username)
-    .then(user => {
-        res.status(200).send({ user })
     })
     .catch(next)
 }

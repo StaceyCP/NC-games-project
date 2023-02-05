@@ -7,6 +7,8 @@ exports.handlePSQLerrors = (err, req, res, next) => {
         res.status(400).send('Bad Request - request body is lacking the required fields!')
     } else if (err.code === '2201W') {
         res.status(400).send('Bad Request - limit must not be negative')
+    } else if (err.code === '23505') {
+        res.status(400).send('Sorry this username is taken :(')
     } else (
         next(err)
     )

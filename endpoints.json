@@ -165,6 +165,25 @@
       ]
     }
   },
+  "POST /api/users": {
+    "description": "Allows a post request to made with a request body containing a username, name and avatar_url to create a new user",
+    "queries": [],
+    "parameters": [],
+    "exampleBody": {
+      "username": "tickle122",
+      "name": "Tom Tickle",
+      "avatar_url": "https://vignette.wikia.nocookie.net/mrmen/images/d/d6/Mr-Tickle-9a.png/revision/latest?cb=20180127221953"
+    },
+    "exampleResponse": {
+      "newUser": [
+        {
+          "username": "tickle122",
+          "name": "Tom Tickle",
+          "avatar_url": "https://vignette.wikia.nocookie.net/mrmen/images/d/d6/Mr-Tickle-9a.png/revision/latest?cb=20180127221953"
+        }
+      ]
+    }
+  },
   "PATCH /api/reviews/:review_id": {
     "description": "Provides an array containing a single review object with an updated votes key",
     "queries": [],
